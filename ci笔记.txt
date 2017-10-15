@@ -1,0 +1,14 @@
+ci 框架session 失效，导致网站无法登陆
+	有可能是服务器时间和客户现实时间不一致，应该更新下服务器时间
+	同步linux服务时间
+		ntpdate -u ntp.api.bz//上海时间
+
+
+ci框架项目迁移注意
+	修改config文件中的base_url。
+	服务器时间同步
+
+
+ci 2.0框架  core/common.php  257行改为
+		$_config[0] =& $config;
+        return $_config[0];

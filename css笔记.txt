@@ -1,0 +1,327 @@
+﻿类样式定义用 类名前加上.    id样式则加上#
+
+css样式优先级
+	* < 标签 < class < id < 行间
+
+默认子元素会继承父元素的相关可用属性
+	<div style="font-size: 50px">what are you ding
+		<div>hello world</div>
+	</div>
+
+在html文件的头上添加一个dtd头将解决ie6下大部分的兼容问题
+	<!DOCTYPE htmlPUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+class的命名不要用一些解析的关键字如content、或者会产生不知名的错误
+
+id|class命名的常用名
+	top header content  footer  module模块  nav导航
+	头：header
+	内容：content/container
+	尾：footer
+	导航：nav
+	侧栏：sidebar
+	栏目：column
+	页面外围控制整体布局宽度：wrapper
+	左右中：left right center
+	登录条：loginbar
+	标志：logo
+	广告：banner
+	页面主体：main
+	热点：hot
+	新闻：news
+	下载：download
+	子导航：subnav
+	菜单：menu
+	子菜单：submenu
+	搜索：search
+	友情链接：friendlink
+	页脚：footer
+	版权：copyright
+	滚动：scroll
+	内容：content
+	标签页：tab
+	文章列表：list
+	提示信息：msg
+	小技巧：tips
+	栏目标题：title
+	加入：joinus
+	指南：guild
+	服务：service
+	注册：regsiter
+	状态：status
+	投票：vote
+	合作伙伴：partner
+id的命名:
+	(1)页面结构
+		容器: container
+		页头：header
+		内容：content/container
+		页面主体：main
+		页尾：footer
+		导航：nav
+		侧栏：sidebar
+		栏目：column
+		页面外围控制整体布局宽度：wrapper
+		左右中：left right center
+	(2)导航
+		导航：nav
+		主导航：mainbav
+		子导航：subnav
+		顶导航：topnav
+		边导航：sidebar
+		左导航：leftsidebar
+		右导航：rightsidebar
+		菜单：menu
+		子菜单：submenu
+		标题: title
+		摘要: summary
+	(3)功能
+		标志：logo
+		广告：banner
+		登陆：login
+		登录条：loginbar
+		注册：regsiter
+		搜索：search
+		功能区：shop
+		标题：title
+		加入：joinus
+		状态：status
+		按钮：btn
+		滚动：scroll
+		标签页：tab
+		文章列表：list
+		提示信息：msg
+		当前的: current
+		小技巧：tips
+		图标: icon
+		注释：note
+		指南：guild
+		服务：service
+		热点：hot
+		新闻：news
+		下载：download
+		投票：vote
+		合作伙伴：partner
+		友情链接：link
+		版权：copyright
+	(四)class的命名:
+		(1)颜色:使用颜色的名称或者16进制代码,如
+			.red { color: red; }
+			.f60 { color: #f60; }
+			.ff8600 { color: #ff8600; }
+		(2)字体大小,直接使用"font+字体大小"作为名称,如
+			.font12px { font-size: 12px; }
+			.font9pt {font-size: 9pt; }
+		(3)对齐样式,使用对齐目标的英文名称,如
+			.left { float:left; }
+			.bottom { float:bottom; }
+		(4)标题栏样式,使用"类别+功能"的方式命名,如
+			.barnews { }
+			.barproduct { }
+	注意事项::
+		1.一律小写;
+		2.尽量用英文;
+		3.不加中杠和下划线;
+		4.尽量不缩写，除非一看就明白的单词.
+		
+文件命名
+	主要的 master.css
+	模块 module.css
+	基本共用 base.css
+	布局，版面 layout.css
+	主题 themes.css
+	专栏 columns.css
+	文字 font.css
+	表单 forms.css
+	补丁 mend.css
+	打印 print.cs
+
+css2支持
+	body > p {}  将设置的是将body下直接子元素为p的设置样式
+	h1 + p {}  设置直接放在h1后面的p元素样式
+	vertical-align  竖直对齐
+	
+css3支持
+	h1 ~ p {} 选择h1标签后的所有兄弟标签p
+	input[type=button]{} 选择所有button按钮
+	input:not([type=radio]){width:100px}  选中所有不是radio的input标签 并设置样式
+
+	-webkit-border-radius   -moz-border-radius   border-radius
+	-webkit-box-shadow  -moz-box-shadow   box-shadow  text-shadow
+	-webkit-box-reflect: direction  offset  mask-box-image
+	ps:-webkit-box-reflect:(below||above||left||right)   5px   -webkit-gradient(linear,left top,left bottom,from(rgba(0,0,0,0)),to(rgba(0,0,0,1)))
+	-webkit-box-reflect:below 5px -webkit-gradient(linear,left top,left bottom,from(rgba(0,0,0,0)),to(rgba(0,0,0,1)))
+	-gradient用来创建css渐变图像，凡是需要图像url的地方都可以使用
+	column-count:integer||auto
+	column-gap:length normal  定义多列文本流中，列与列之间的距离  column-rule:rule-width  rule-color  定义列与列之间的分割线的样式
+	-webkit-column-count:2  -moz-column-count   column-count
+
+动画属性
+	transform:  该属性允许元素以不同的方式进行偏移，旋转，缩放，倾斜
+	-moz-transform  -webkit-transform:scale(x,y)   scale3d(x,y,z)对原大小的宽和高分别进行x，y倍的缩放  scaleX(x)  scaleY(y)   scaleZ(z)
+	skew(30deg,20deg) 沿这x轴和y轴进行偏移第二个值可以去掉或者设为0；  skewX()  skewY()
+	translate(translate-value-x,translate-value-y) //是进行转换的
+	translate3d(translate-value-x,translate-value-y,translate-value-z)
+	translateX()   translateY()  translateZ()
+	rotate(angle)   rotate3d(x,y,z,angle)   rotateX(angle)  rotateY(angle)   rotateZ(angle)
+	transform-origin:0% 0%
+	transform-style:flat||preserve-3d    flat所有子元素都处于一个二维平面上   preserve-3d那么所有的子元素将保留其维度
+	transition-delay:time  在一个动画开始前延迟
+	transition-duration:time  定义动画播放一次的时间
+	transition-timing-function    该属性定义动画将如何运动
+
+css 应用 
+	ul li h1 div是块状元素
+	span a 是内联元素  内联元素只有将其变换成块状元素时，才能对其设置宽和高。
+	直接在HTML元素中声明  多个属性之间的定义用 ; 号来分隔
+	导航区一般采用三层嵌套   <li><a htrf="#"><strong><span></span></strong></a></li>
+	需要提交的需要放在form标签中
+
+清理浮动
+	标准的清理浮动代码
+	.clear { zoom:1; }   //当父级有宽度的时候无需设置
+	.clear:after { content:' '; display:block; clear:both; }
+
+	父级div定义 overflow:hidden即可清理浮动
+	父级有高的情况下不需要清理浮动
+
+设计层级关系的时候可以用z-index来设计
+
+但不需要文本框或者按钮的样式时可以让他们的背景和边框样式都为none 
+
+图形的透明度
+	IE下表示方法filter:alpha(opacity:80);设置背景透明度为80%
+	标准浏览器中的方法为 opacity:0.8 即可
+
+
+在head中定义style
+<style type="text/css">
+   p{
+		font-family: arial;
+		size: 12px;
+	}
+	.nav {
+	}
+	#navd {
+	}
+</style>
+	
+<head>
+	<link rel="stylesheet" type="text/css" href="mystyle.css" />
+</head>
+浏览器会从文件 mystyle.css 中读到样式声明，并根据它来格式文档。
+
+
+属性
+	padding  padding-top padding-bottom padding-right padding-left  表示内边距
+	h1 {padding: 10px 0.25em 2ex 20%;}
+	单边内边距属性
+	也通过使用下面四个单独的属性，分别设置上、右、下、左内边距：
+	padding-top
+	padding-right
+	padding-bottom
+	padding-left
+	您也许已经想到了，下面的规则实现的效果与上面的简写规则是完全相同的：
+	h1
+	{
+	  padding-top: 10px;
+	  padding-right: 0.25em;
+	  padding-bottom: 2ex;
+	  padding-left: 20%;
+	}
+
+背景设置
+	background-color        				背景颜色
+	color: red       						颜色
+	background-image: url("图片地址")     	背景图片
+	background-repeat: repeat-y | repeat-x | no-repeat  
+	如果文档比较长，那么当文档向下滚动时，背景图像也会随之滚动。当文档滚动到超过图像的位置时，图像就会消失。
+	您可以通过 background-attachment 属性防止这种滚动。通过这个属性，可以声明图像相对于可视区是固定的（fixed），
+	因此不会受到滚动的影响：
+	body 
+	{
+	  background-image:url(/i/eg_bg_02.gif);
+	  background-repeat:no-repeat;
+	  background-attachment:fixed
+	}
+	如需查看上例的效果，可以亲自试一试。
+	background-attachment 属性的默认值是 scroll，也就是说，在默认的情况下，背景会随文档滚动。
+
+字体设置
+	font-size: 20px  字体大小
+	font-family: ariar  字体名称
+	font-style:normal | italic(斜体显示) | oblique(文本倾斜显示)
+	text-align: left  文本对齐方式
+	text-indent 属性，该属性可以方便地实现文本缩进。
+	p {text-indent: 5em;}   这样就能实现段落首行缩进5个字体
+	word-spacing：1em 用来设置（英文单词）间的间距
+	text-transform 属性处理文本的大小写。这个属性有 4 个值：
+	none
+	uppercase
+	lowercase
+	capitalize
+	默认值 none 对文本不做任何改动，将使用源文档中的原有大小写。顾名思义，
+	uppercase 和 lowercase 将文本转换为全大写和全小写字符。最后，capitalize 只对每个单词的首字母大写。
+
+链接四种状态
+	a:link - 普通的、未被访问的链接
+	a:visited - 用户已访问的链接
+	a:hover - 鼠标指针位于链接的上方
+	a:active - 链接被点击的时刻
+
+
+列表设置
+	ul {list-style-type : square}
+	上面的声明把无序列表中的列表项标志设置为方块。
+	list-style-type: none;  设置列表前无内容
+
+	有时，常规的标志是不够的。你可能想对各标志使用一个图像，这可以利用 list-style-image 属性做到：
+	ul li {list-style-image : url(xxx.gif)}
+	li {list-style : url(example.gif) square inside}  直接一次性声明
+
+
+轮廓设置（outline）是绘制于元素周围的一条线，位于边框边缘的外围，可起到突出元素的作用。
+	p 
+	{
+		border:red solid thin;
+		outline:#00ff00 dotted thick;
+	}
+	
+	所有浏览器都支持 outline-style 属性。
+		值		描述
+		none	默认。定义无轮廓。
+		dotted	定义点状的轮廓。
+		dashed	定义虚线轮廓。
+		solid	定义实线轮廓。
+		double	定义双线轮廓。双线的宽度等同于 outline-width 的值。
+		groove	定义 3D 凹槽轮廓。此效果取决于 outline-color 值。
+		ridge	定义 3D 凸槽轮廓。此效果取决于 outline-color 值。
+		inset	定义 3D 凹边轮廓。此效果取决于 outline-color 值。
+		outset	定义 3D 凸边轮廓。此效果取决于 outline-color 值。
+		inherit	规定应该从父元素继承轮廓样式的设置。
+	所有浏览器都支持 outline-width 属性。
+		值		描述
+		thin	规定细轮廓。
+		medium	默认。规定中等的轮廓。
+		thick	规定粗的轮廓。
+		length	允许您规定轮廓粗细的值。
+		inherit	规定应该从父元素继承轮廓宽度的设置。
+
+
+overflow:  auto  让浏览器自动处理溢出   hidden 隐藏   scroll 滚动
+
+CSS position 属性
+	通过使用 position 属性，我们可以选择 4 种不同类型的定位，这会影响元素框生成的方式。
+	position 属性值的含义：
+		static
+			元素框正常生成。块级元素生成一个矩形框，作为文档流的一部分，行内元素则会创建一个或多个行框，置于其父元素中。
+		relative
+			元素框偏移某个距离。元素仍保持其未定位前的形状，它原本所占的空间仍保留。
+		absolute
+			元素框从文档流完全删除，并相对于其包含块定位。包含块可能是文档中的另一个元素或者是初始包含块。
+			元素原先在正常文档流中所占的空间会关闭，就好像元素原来不存在一样。元素定位后生成一个块级框，
+			而不论原来它在正常流中生成何种类型的框。
+
+	当绝对定位absolute的时候要求其父元素有一个相对定位relative
+	相对定位居中的时候用margin：0 auto;来达到居中的目的
+	绝对定位的时候可以用top:0; left:50%; margin-left:-(width/2)px;

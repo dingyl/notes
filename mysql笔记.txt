@@ -1,0 +1,843 @@
+数据库信息
+	show warnings \G  //显示警告内容
+	show errors \G  //显示错误内容
+	show databases;//展示当前所有的数据库名称
+	show tables;//展示当前所有的表名称
+	use dataname;//切换到dataname数据库
+	show tablename|viewname;//展示当前数据库的所有表 以及视图名称
+	desc tablename|viewname;//显示tablename表的列信息
+	truncate tablename;//清空表中的内容，并将表中auto_increment的id号置为初始值
+	show  create  table  tablename \G //展示建表的语句
+杂项
+	将一个数据库表中的内容导入到另一个数据库表中
+	insert into dt.t1 select * from t2;
+	
+	float(7,2)//长度共有七位，小数点后有两位
+	id int(5) unsigned zerofill primary key auto_increment//长度如果达不到5位，将自动在前面添加0、
+	auto_increment//自动增长，只能是整数，数据每增加一条就会自动增加一，而且字段上的值不允许重复
+
+	事务执行过程中，数据库将会被锁定。一般建议采用锁表的方式，少用事务。
+
+关键字的优先级别
+	逻辑查询的步骤处理操作顺序。每一个步骤都会产生一个虚拟表
+	(8)select		(9)distinct
+	(1)from<left_table>
+	(3)<join_type> join <right_table>
+	(2)		on<join_condition>
+	(4)where<where_condition>
+	(5)group by<group_by_list>
+	(6)with{cube|rollup}
+	(7)having<having_condition>
+	(10)order by<order_by_list>
+	(11)limit<limit_number>
+
+
+SELECT * FROM shop_goods_info WHERE pcode IN (174919,3532010,3428602) ORDER BY FIELD(pcode,174919,3532010,3428602);
+primary key(cart_id,user_id,goods_id) 合并主键
+错误提示 
+	1064:语法错误 1054:字段不存在或者拼写错误
+
+replace into 跟 insert 功能类似，不同点在于：replace into 首先尝试插入数据到表中， 1. 如果发现表中已经有此行数据（根据主键或者唯一索引判断）则先删除此行数据，然后插入新的数据。 2. 否则，直接插入新数据。
+
+mysql读写锁
+    local table t1 [read|write];
+    unlock tables;全部解锁
+    显示加锁在备份的时候
+
+分页查询优化
+   无条件时，或者条件字段都有索引
+	1：select * from goods where goods_id >= (select max(goods_id) from (select goods_id from goods order by goods_id limit 3000000) as tmp) limit 10;
+	2：select * from goods where goods_id >= (select max(goods_id) from (select goods_id from goods order by goods_id limit 3000000,1) as tmp) limit 10;
+	3：Select * from goods Where goods_id>=(Select goods_id From goods limit 3000000,1)limit 10;
+	4：select * from goods limit 3000000,10;
+	四种方式中，效率比较 2=3>1>4 通过索引来进行定位，表面上看似进行了多次查询，实际上效率更高。
+	mysql> select goods_id from goods limit 3000000,1; 
+	+----------+ | goods_id | +----------+ | 3000001 | +----------+ 1 row in set (0.57 sec)
+	上面的2,3方式，时间主要花费在获取goods_id。高效查询理论，获取limit起始位置的id值，根据值可以用索引获取数据
+
+	mysql> select * from goods limit 3000000,1; 
+	+----------+------------+---------+ | goods_id | goods_name | cate_id | +----------+------------+---------+ | 3000001 | 好商品 | 5 | +----------+------------+---------+ 1 row in set (9.47 sec) mysql> select goods_id from goods limit 3000000,1; +----------+ | goods_id | +----------+ | 3000001 | +----------+ 1 row in set (0.57 sec)
+	通过上面两个比较可以看到，上面的一个没有用索引，而下面的查询更加具体，采用了索引进行查询，速度明显更快
+
+条件字段没有索引
+    千万级的大数据，根据id进行查询的耗时可以忽略不计。所以一般的搜索引擎会返回id字段。再根据id进行查询。
+    根据 索引 > between < = 条件查询都是毫秒级的非常快，limit查询会根据offset变大，而缓慢。
+
+
+数据操作安全，主要针对字符型字段的安全（sql注入和截断修改）  
+    根据条件查询 截断用addslashes进行处理。
+    新增数据和修改数据（向数据中写入数据）sql注入用addslashes配合htmlspecialchars函数
+    插入数据：(sql注入)
+        字符型
+            去除<script></script>标签，最好用富文本编辑器来实现大型文本的编辑
+            去除;空格,对于<>'"%进行转换
+			htmlspecialchars();将字符转换为HTML实体
+			& （和号） 成为 &amp;
+			” （双引号） 成为 &quot;
+			‘ （单引号） 成为 &#039;
+			< （小于） 成为 &lt;
+			> （大于） 成为 &gt;
+			htmlspecialchars_decode() 函数把一些预定义的 HTML 实体转换为字符（和htmlspecialchars相反）
+
+
+			addcslashes() 函数在指定的字符前添加反斜杠。
+			语法
+			addcslashes(string,characters)
+			addslashes() 函数在指定的预定义字符前添加反斜杠。
+			addslashes()和stripslashes()正好是相反的，直接记忆：addslashes()加个\，stripslashes()去个\
+			单引号 (')
+			双引号 ("")
+			反斜杠 (\)
+			NULL
+			trim()去除空格
+    删除数据：
+        根据id删除，基本就是通过链接（链接也可以人为的修改），所以根据id依旧和根据条件删除一样。数据可能包含不合法的字符串
+        根据条件删除
+            int型条件直接转化一下就行
+            字符型
+    修改数据：
+    查询数据：（截断进行修改）
+          
+    展示数据：
+
+mysql查询字符串大小写不敏感
+	在创建表时，如果表中含有中文或者要区分大小写的时候，改为 name char(10) binary 二：在select * from freecrm.ec_tab where name like binary 'T%'
+
+
+Left Join 语法：
+	select   *   from
+	table1   left   join   table2   on   条件1   
+	left   join   table3   on   条件2   
+	left   join   table4   on   条件3  
+	where   条件4
+	
+	实例：其中多表连接，一共连接了3个表。使用聚集函数SUM，用到了GROUP BY
+		SELECT a.[UserID],b.[Name],sum (c.[Money]+c.[Bank])as TotalMoney
+		FROM Table1 a(nolock)
+		LEFT JOIN Table2 b(nolock) on a.[UserID] = b.[UserID] 
+		LEFT JOIN Table3 c(nolock) ON b.[UserID]=c.[UserID] 
+		WHERE  a.[UserID] = b.[UserID] and a.[UserID] = c.[UserID] and a.[Time] >= '2005-01-01' AND a.[Time] <= '2006-12-31' 
+		GROUP BY a.[UserID],b.[Name]
+		ORDER BY a.[Time] DESC 
+
+	优化一下
+		SELECT a.[UserID],b.[Name],sum (c.[Money]+c.[Bank])as TotalMoney
+		FROM Table1 a(nolock)
+		LEFT JOIN Table3 c(nolock) ON a.[UserID]=c.[UserID],  Table2 b(nolock) 
+		WHERE  a.[UserID] = b.[UserID] and a.[Time] >= '2005-01-01' AND a.[Time] <= '2006-12-31' 
+		GROUP BY a.[UserID],b.[Name]
+		ORDER BY a.[Time] DESC 
+
+group by 
+    在select 语句中可以使用group by 子句将行划分成较小的组，然后，使用聚组函数返回每一个组的汇总信息，另外，可以使用having子句限制返回的结果集。group by 子句可以将查询结果分组，并返回行的汇总信息Oracle 按照group by 子句中指定的表达式的值分组查询结果。
+	在带有group by 子句的查询语句中，在select 列表中指定的列要么是group by 子句中指定的列，要么包含聚组函数
+
+	select max(sal),job emp group by job;
+	(注意max(sal),job的job并非一定要出现，但有意义)
+
+	查询语句的select 和group by ,having 子句是聚组函数唯一出现的地方，在where 子句中不能使用聚组函数。
+
+	select deptno,sum(sal) from emp where sal>1200 group by deptno having sum(sal)>8500 order by deptno;
+
+	当在gropu by 子句中使用having 子句时，查询结果中只返回满足having条件的组。在一个sql语句中可以有where子句和having子句。having 与where 子句类似，均用于设置限定条件
+ 
+	where 子句的作用是在对查询结果进行分组前，将不符合where条件的行去掉，即在分组之前过滤数据，条件中不能包含聚组函数，使用where条件显示特定的行。
+	having 子句的作用是筛选满足条件的组，即在分组之后过滤数据，条件中经常包含聚组函数，使用having 条件显示特定的组，也可以使用多个分组标准进行分组。
+
+	查询每个部门的每种职位的雇员数
+	select deptno,job,count(*) from emp group by deptno,job;
+
+	PRIMARY KEY (`imageid`),-本表的imageid作为主键
+	KEY `categoryid` (`categoryid`),-本表的categoryid字段与categoryid表categoryid字段建立外键
+	KEY `userid` (`userid`)-本表的userid字段与userid表userid字段建立外键
+	key 'vuerid'('userid')：括号外是建立外键的对应表，括号内是对应字段
+	这是给表当中的userid字段建立一个索引，索引的名称为vuserid，默认的索引类型是b-tree类型；类似于主键的索引类型.
+
+	SELECT student_id, GROUP_CONCAT(courses_id) AS courses FROM student_courses WHERE student_id=2GROUP BY student_id;
+	+------------+---------+
+	| student_id | courses |
+	+------------+---------+
+	| 2 | 3,4,5 |
+	+------------+---------+
+
+	mysql> select id,group_concat(name) from demo group by id;
+	+------+--------------------+
+	| id   | group_concat(name) |
+	+------+--------------------+
+	|    1 | ding,yao,li        |
+	|    2 | da,xiao,xiong      |
+	+------+--------------------+
+	2 rows in set (0.00 sec)
+	
+sql优化
+	通过查询慢查询日志来获取执行时间过长的sql。
+	用来定位执行效率较低的sql语句。
+	1: explain select * from table where expression    2: desc select * from table where expression
+        他们是一样的，一般会在后面加上 \G 显示
+	重点看：sql语句影响的函数，是否用到索引，是不是多表查询
+	
+多表查询
+	distinct  是针对所有查询的字段的唯一性的，select distinct id,name from table;查询将根据(id,name)的唯一性来显示结果
+	join 
+		cross join 交叉连接，笛卡尔积结果 					eq: select * from fruit cross join type; 
+		join 	内连接，只有a中id与b中相等的才会显示		eq: select * from table1 a join table2 b on a.id=b.id; 
+		left join 左外连接，左表中的数据将完全显示，如果右表中没有相关的数据，以NULL显示
+		eq: select * from lefttable a left join righttable b on a.id=b.id
+		right join 同上;
+	exists(查询语句可以查询多个字段)  效率比in高
+	in		(查询语句只能是一个字段)
+
+
+字符乱码
+    mysql> \s 查看字符集
+	show character set;查看字符集的对应校验字符集名称列表
+	
+	set names 'utf8';
+	create database a default chaset utf8 collate utf8_general_ci;
+	
+	修改mysql的配置文件，在mysqld 下添加default-character-set=gbk
+	又由于系统默认的就是gbk，不修改也可以。
+	重点是修改系统的server characterset 和 db characterset  ，因为默认情况下为Latin1格式.
+	这样在格式转换存储的时候就会出现信息丢失，导致出现乱码现象
+	我们可以在配置文件的 [mysqld] 添加两行： character-set-server=utf8    和   collation-server=utf8_general_ci
+	这样重新启动服务，设置就会成功。
+
+	当然如果在浏览器端，如果没有指定utf8格式输出信息时，将会出现乱码，由于，一般输出的都是网页，
+	可以添加<head><meta charset=’utf-8’/></head>来告诉浏览器编码的样式
+
+	通过phpmyadmin 来设置 中文字符的编码为Utf8_general_ci
+	连接器的作用：连接客服端与服务器
+	客服端的字符先发给连接器
+	连接器选择一种编码将其转换，临时存储
+	再次转换成 服务器需要的编码，并存储在服务器
+	Set character_set_client=gbk;//告诉服务器客服端的编码是gbk的
+	Set character_set_connection=utf8;//设置连接的字符编码为utf8
+	Set character_set_results=gbk;//如果服务器返回值，让其返回gbk编码
+
+	Mysql字符集
+        show status;查看MySQL服务器运行的各种状态值  
+        show variables; 查看MySQL服务器配置信息
+        show plugins;
+	Status
+	show variables like 'collation_%';
+	show variables like 'character_%'; 
+	show create table table_name；
+	show full fields from table_name;
+	查看mysql支持的字符集： show charset;  或 show char set;
+变量
+	变量名称前面不需要加@
+	mysql中变量的声明最好在begin与end之间
+	mysql的不同之处在于，其的sql语句后面需要添加;来分割不同语句
+
+	变量的赋值
+	set 变量名:=expression;
+	set age := age+20;
+
+
+触发器
+	show triggers//查看已有的trigger
+	drop trigger triggername//删除triggername
+	
+	delimiter $ //定义最外层用一个$作为定界符，即到$的时候结束
+
+	//sql语句后面应该加上;号
+	create trigger triggername
+	after|before insert on tablename
+	for each row  //在mysql里面只能够使用each row 而在oracle数据库还可以使用条件表达式
+	begin
+		update tablename2 set ...;
+	end$
+
+	create trigger t2
+	after insert on ord
+	for each row
+	begin
+		update goods set num=num-new.much where gid=new.gid;
+	end
+	$
+	//在上面的这个触发器中，new表示刚才新插入的一行
+	同样old表示刚删除的一行
+
+	这样就可以对新行或者老行的引用
+
+	create trigger t3
+	after delete on ord
+	for each row
+	begin
+		update goods set num=num+old.much where gid=old.gid;
+	end
+	$
+
+
+	create trigger t4
+	before update on ord
+	for each row
+	begin
+		update goods set num=num+old.much-old.much where gid=new.gid;
+	end
+	$
+
+
+	//在插入之前进行判断，并修改插入值
+	create trigger t5
+	before insert on ord
+	for each row
+	begin
+		declare rnum int;
+		select num into rnum from goods where gid=new.gid;
+		//这句将查询到的num值赋值给rnum
+		if new.much>rnum then
+			set new.much=rnum;
+		end if;
+		update goods set num=num-new.much where gid=new.gid;
+	end$
+
+
+	before的用途
+	//当剩余商品数量为3的时候，而用户的订单购买数量为5时，可以同过before来
+	禁止商品的购买
+	当购买数量大于剩余数量的时候可以通过修改购买数量的方式，来避免曝仓
+
+
+	触发器
+	在oracle中触发器有语句级触发器，和行级触发器
+	像前面的触发器当修改100行语句的时候，触发器将会触发100次
+	for each row 就是行级触发器，每一行受影响就会触发一次
+	在oracle中如果for each row 不写，会默认是语句级触发器,无论update语句一次影响了多少行，都只会执行一次
+	比如：1人下了订单，买了5件商品，insert 5次，可以用行级触发器，修改5次库存
+	如果用语句级的触发器，就只会insert 一条消息提醒
+	遗憾的是在mysql目前不支持语句级触发，所以必须写for each row
+
+
+存储过程
+	过程相当与一个没有返回值的函数
+	show procedure status \G
+	查看存储过程的详细信息
+
+	调用存储过程
+	call procedurename()
+
+
+	1创建一个存储过程
+	create procedure p1()
+	begin
+		declare 
+	end
+
+	2创建一个带参数的存储过程
+	create procedure p2(var1 int,var2 int)
+	begin
+		declare 
+	end
+
+
+	null 与 任何类型的变量进行处理都会得到null结果
+	3创建一个带返回值的存储过程
+	create function p3(in var1 int,out var2 int,inout var3 int)
+	begin
+		set var2:=0;
+		set var2:=var1;
+		set var3:=var3+20;
+	end
+
+	set @var3=19;
+	call p3(4,@var2,@var3); //调用之后将会给变量@var2赋值
+	select @var2;
+
+
+控制流程
+
+	if expression then
+		sql;
+	elseif expression then
+		sql;
+	endif;
+
+	while循环
+	declare i int default 0;
+	while i < n do
+		set i:=i+1;
+	end while;
+	select i;
+
+	repeat循环
+	declare i int default 0;
+	repeat
+		set i:=i+1;
+	until i>n end repeat;
+	select i;
+
+	declare i int default 0;
+	while i < n loop
+		set i:=i+1;
+	end loop;
+	select i;
+
+
+	declare pos int default 0;
+	case pos
+		when 1 then select '1';
+		when 2 then select '2';
+		when 3 then select '3';
+		else select 'null';
+	end case;
+
+
+游标cursor  
+	游动的标识
+	create procedure p4()
+	begin
+		declare cursorname cursor for select * from tablename;
+		declare count int default 0;
+		declare i int default 0;
+		select count(*) into count from tablename;
+		open cursorname;
+			repeat
+				set i:=i+1;
+				fetch cursorname into [var1];
+			until i>=cnt end repeat;
+		close cursorname;
+	end$
+
+	#游标取值越界
+	利用越界标识来结束,可以利用declare continue handler来操作1个越界标识
+	create procedure p5()
+	begin
+		declare cursorname cursor for select * from tablename;
+		declare statue int default 1;
+		
+		declare continue handler for NOT FOUND set statue:=0;
+		//声明一个句柄事件，当发生not found事件的时候，将statue的值变成0
+		
+		declare i int default 0;
+		select count(*) into count from tablename;
+		open cursorname;
+			repeat
+				set i:=i+1;
+				fetch cursorname into [var1];
+			until statue=0 end repeat;
+		close cursorname;
+	end$
+
+事务
+	begin
+	//sql
+	commit||rollback
+
+
+	Select * from tablename;
+	Set  AUTOCOMMIT=TRUE;
+	Start transaction;
+	Insert into tablename values();
+	Commit|rollback;
+	
+	事务的执行相当于给在处理的这条语句加上一个锁，只允许别人查看，但不允许删除和更新被加锁的数据
+	select * from tablename where id=8 for update;//这个语句相当于给id=8的信息加锁了
+	commit || rollback;//只有当他释放锁的时候其他的加锁进程才能够执行，或者一直等待
+       
+视图
+	创建视图
+	create [Algorithm = merge|temptable|undefined] view v1
+	as
+	select * from tablename;
+	
+	视图的创建主要是为了查询数据的！
+	视图改变了呢?
+	0: 视图增删改也会影响表
+	1: 但是,视图并是总是能增删改的.
+
+	答: 视图的数据与表的数据 一一对应时,可以修改.
+	对于视图insert还应注意,
+	视图必须包含表中没有默认值的列.
+	
+	视图的algorithm
+	Algorithm = merge/ temptable/ undefined
+	Merge: 当引用视图时,引用视图的语句与定义视图的语句合并.
+	Temptable:当引用视图时,根据视图的创建语句建立一个临时表
+	Undefined:未定义,自动,让系统帮你选.
+
+	Merge,意味着视图只是一个规则,语句规则, 当查询视图时,
+	把查询视图的语句(比如where那些)与创建时的语句where子句等合并,分析.
+	形成一条select 语句.
+	例: 创建视图的语句:
+	mysql> create view g2 as select goods_id,cat_id,goods_name,shop_price from goods where shop_price>2000
+	查询视图的语句:
+	select * from g2  where shop_price < 3000;
+
+	最终执行的语句:
+	select goods_id,cat_id,goods_name,shop_price from goods where shop_price > 2000 and shop_price < 3000
+
+	而temptable是根据创建语句瞬间创建一张临时表,
+	然后查询视图的语句从该临时表查数据.
+	create algorethm=temptable view g2 as select goods_id,cat_id,goods_name,shop_price from goods where shop_price > 2000
+	查询视图的语句:
+	 select * from g2  where shop_price < 3000;
+
+	最终执行的2句话: 取数据并放在临时表,然后去查临时表.
+	Select  goods_id,cat_id,goods_name,shop_price from goods where shop_price > 2000;
+	========> temptable
+
+	再次查临时表
+	Select * from temptable where shop_price< 3000
+
+mysql忘记密码
+	/etc/init.d/mysql stop 关闭mysql服务
+	/usr/local/mysql/bin/mysqld --skip_grant_tables & 跳过权限认证启动mysql
+	mysql -uroot 登陆mysql
+	
+	
+	//使用--skip-grant-tables启动mysql时不可使用grant命令的，所以只有我们手工来设置权限表了
+	修改用户或者添加用户
+	如果表中有root用户
+		update user set password=password("123") where user="root"; 修改密码
+	如果没有用户
+		insert into user('user','password') values('root',password('123456'));
+		update user set Select_priv='Y' ,Insert_priv='Y' ,Update_priv='Y' ,Delete_priv='Y' ,Create_priv='Y' ,Drop_priv='Y' ,References_priv='Y',Grant_priv='Y',Index_priv='Y',Alter_priv='Y',Create_tmp_table_priv='Y', Lock_tables_priv='Y',Create_view_priv='Y',Grant_priv='Y',Show_view_priv='Y',Create_routine_priv='Y', Alter_routine_priv='Y', 	Execute_priv='Y' where user='root';
+	
+	flush privileges; 刷新权限
+	quit；退出登录
+	/etc/init.d/mysql restart 重启mysql服务
+	
+mysql用户管理
+	如果create用户失败，可以采取直接向mysql.user表中直接插入数据
+	一, 创建用户: 
+		命令:CREATE USER 'username'@'host' IDENTIFIED BY 'password'; 
+		说明:username - 你将创建的用户名, host - 指定该用户在哪个主机上可以登陆,如果是本地用户可用localhost, 如果想让该用户可以从任意远程主机登陆,可以使用通配符%. password - 该用户的登陆密码,密码可以为空,如果为空则该用户可以不需要密码登陆服务器. 
+		例子: CREATE USER 'dog'@'localhost' IDENTIFIED BY '123456'; 
+		CREATE USER 'pig'@'192.168.1.101_' IDENDIFIED BY '123456'; 
+		CREATE USER 'pig'@'%' IDENTIFIED BY '123456'; 
+		CREATE USER 'pig'@'%' IDENTIFIED BY ''; 
+		CREATE USER 'pig'@'%'; 
+
+	二,授权: 
+		命令:GRANT privileges ON databasename.tablename TO 'username'@'host' 
+		说明: privileges - 用户的操作权限,如SELECT , INSERT , UPDATE 等(详细列表见该文最后面).如果要授予所的权限则使用ALL.;databasename - 数据库名,tablename-表名,如果要授予该用户对所有数据库和表的相应操作权限则可用*表示, 如*.*. 
+		例子: GRANT SELECT, INSERT ON test.user TO 'pig'@'%'; 
+		GRANT ALL ON *.* TO 'pig'@'%'; 
+		注意:用以上命令授权的用户不能给其它用户授权,如果想让该用户可以授权,用以下命令: 
+		GRANT privileges ON databasename.tablename TO 'username'@'host' WITH GRANT OPTION; 
+
+	三.设置与更改用户密码 
+		命令:SET PASSWORD FOR 'username'@'host' = PASSWORD('newpassword');如果是当前登陆用户用SET PASSWORD = PASSWORD("newpassword"); 
+		例子: SET PASSWORD FOR 'pig'@'%' = PASSWORD("123456"); 
+
+	四.撤销用户权限 
+		命令: REVOKE privilege ON databasename.tablename FROM 'username'@'host'; 
+		说明: privilege, databasename, tablename - 同授权部分. 
+		例子: REVOKE SELECT ON *.* FROM 'pig'@'%'; 
+		注意: 假如你在给用户'pig'@'%'授权的时候是这样的(或类似的):GRANT SELECT ON test.user TO 'pig'@'%', 则在使用REVOKE SELECT ON *.* FROM 'pig'@'%';命令并不能撤销该用户对test数据库中user表的SELECT 操作.相反,如果授权使用的是GRANT SELECT ON *.* TO 'pig'@'%';则REVOKE SELECT ON test.user FROM 'pig'@'%';命令也不能撤销该用户对test数据库中user表的Select 权限. 
+		具体信息可以用命令SHOW GRANTS FOR 'pig'@'%'; 查看. 
+
+	五.删除用户 
+		命令: DROP USER 'username'@'host'; 
+
+权限管理
+	分为两个阶段
+		你有没有权限进行连接
+		你有没有权限执行此操作(select,update等等)
+		主要依据三个参数
+			你从哪来  host
+			你是谁  user
+			你的密码是多少  password
+			用户的这三个信息存储mysql数据库的mysql库下的user表中
+	修改用户的连接主机名称
+		update user set host='192.168.1.101' where user='root';
+	冲刷权限，类似于刷新的效果;好让权限立刻适用
+		flush privileges;
+	新增一个用户  授权并创建用户
+		grant [权限1，权限2，权限3] on *[数据库].*[表] to user[用户]@'192.168.%.%'[ip] identified by 'password'[密码];
+    
+	desc table mysql.user\G
+	常用权限有 all,create,drop,insert,delete,update,select;
+	       Select_priv: Y
+           Insert_priv: Y
+           Update_priv: Y
+           Delete_priv: Y
+           Create_priv: Y
+             Drop_priv: Y
+           Reload_priv: Y
+         Shutdown_priv: Y
+          Process_priv: Y
+             File_priv: Y
+            Grant_priv: Y
+       References_priv: Y
+            Index_priv: Y
+            Alter_priv: Y
+          Show_db_priv: Y
+            Super_priv: Y
+ Create_tmp_table_priv: Y
+      Lock_tables_priv: Y
+          Execute_priv: Y
+       Repl_slave_priv: Y
+      Repl_client_priv: Y
+      Create_view_priv: Y
+        Show_view_priv: Y
+   Create_routine_priv: Y
+    Alter_routine_priv: Y
+      Create_user_priv: Y
+            Event_priv: Y
+          Trigger_priv: Y
+Create_tablespace_priv: Y
+
+	针对全局授予权限
+	    grant all on *.* to lisi@'192.168.1.%' identified by '111111';//让lisi在整个局域网中都能够使用
+	收回权限
+	    revoke all on *.* from lisi@'192.168.1.%';
+	针对某个库授予权限
+		grant all on blog.* lisi@'192.168.1.%' identified by '111111'; //设置lisi对blog数据库所有操作权限
+		revoke all on blog.* from lisi@'192.168.1.%';
+	针对表授权
+		grant all on blog.msg lisi@'192.168.1.%' identified by '111111';//设置lisi对blog数据库的msg表有所有操作权限
+	连接数据库 
+		mysql -h192.168.1.101 -ulisi -p111111
+	查看用户授权信息
+		show grants for user@ip
+
+备份数据
+	mysqldump -uroot -p123456 databasename -l(lock) -f(强制执行) -F(flush logs) > E:/try.sql   备份databasename到try.sql文件中
+	mysqldump -uroot -p123456 databasename tablename > E:/tablename.sql  备份databasename下的tablename表到制定的文件中
+还原数据
+	先进入mysql控制台后使用命令
+		mysql>  create database databasename; 先创建一个database用来还原数据库到此
+		mysql>  use databasename;
+		mysql>  source E:/try.sql来实现还原
+	直接还原
+		mysql -uroot -p123456 database < E:/try.sql
+
+
+	mysqlbinlog --no-defaults --start-position="300" --stop-position="500" mysql-bin.000001  用来查看日志文件中的内容
+	只是用log日志中300-500 中间的数据进行操作
+	同样可以基于时间点进行恢复(但没有基于位置的精确)
+	--stop-date="2012-01-04 21:17:50"
+	--start-date="2012-01-04 19:10:10"
+数据恢复情景
+        定期执行备份
+	1：先备份了数据，并flush logs
+		mysqldump -uroot -p123456 databasename -l(lock) -F(flush logs) > E:/try.sql
+	2：执行相应的插入操作，最后flush logs bin-log.000002
+		//insert something    flush logs
+	3：执行破坏数据的操作
+		//drop table 
+	要求将数据恢复到3步骤执行前的情况
+	
+	恢复步骤
+	1：先将备份数据还原
+		mysql -uroot -p123456 database < E:/try.sql
+	2: 找到2步骤操作的binlog日志，进行还原。
+		mysqlbinlog --no-defaults mysql-bin.000002 | mysql -uroot -p123456 databasename
+	如果主服务器已经存在应用数据，则在进行主从复制时，需要做以下处理：
+	(1)主数据库进行锁表操作，不让数据再进行写入动作
+		mysql> FLUSH TABLES WITH READ LOCK;
+	(2)查看主数据库状态
+		mysql> show master status;
+	(3)记录下 FILE 及 Position 的值。
+		将主服务器的数据文件（整个/opt/mysql/data目录）复制到从服务器，建议通过tar归档压缩后再传到从服务器解压。
+	(4)取消主数据库锁定
+		mysql> UNLOCK TABLES;
+	
+主从复制replication
+	mysqlbinlog mysql-bin.000001  用来查看日志文件中的内容
+	mysqlbinlog --no-defaults mysql-bin.000001  用来查看日志文件中的内容
+	对于实时性要求比较高的，备份数据库依旧要在主服务器上执行
+	主服务器要配置binlog
+	从服务器要配置relaylog
+	
+	从服务器如何有权读取 master的binlog?
+		授权 master 要授予salve账号，从服务器利用账号来连接。
+		从服务器读取binlog文件，然后分析得到relaylog文件，最后再将文件中的内容施加到自己的身上
+		grant replication client,replication slave on *.* to repl@'192.168.1.%' identified by '111111';
+		//给从服务器一个权限
+	
+	flush logs 生成一个最新的bin-log日志
+	show master status 查看最后一个bin日志
+	reset master 清空所有的bin-log日志
+	show slave status\G 查看从服务器上的状态
+        \s 查看当前mysql的状态，包含字符
+        show plugins    查看mysql的插件
+
+	1：登录mysql数据库
+	2：给从服务器设置权限
+		mysql> grant all on *.* ....
+	3: 修改主从服务器的配置文件 /etc/my.cnf
+		配置主服务器的mysql的配置文件
+			server-id=201   //设置id
+			log-bin=mysql-bin    //声明二进制的日志文件为mysql-bin.xxxx
+			#二进制日志的格式   mixed混合 由系统来分析语句，来决定使用row还是statement    row行级 记录磁盘变化  statement语句  记录执行语句
+			binlog-format=mixed
+			语句长而磁盘变化少，易用row ，如果语句短而磁盘变化多，易用statement
+
+		从服务器的配置文件 
+			server-id=202
+			log-bin=mysql-bin
+			binlog-format=mixed
+			relay-log=mysql-relay
+		重启mysqld服务
+			show variables like "%bin%";	查看bin-log是否已经开启
+	4：在主服务器上设置读锁定有效，确保没有数据库操作，以获得一个一致性的快照
+		mysql> flush tables with read lock(但要备份数据的时候执行)
+	
+	5: 查看主服务器上当前的二进制日志名，和偏移量
+		show master status;//查看从服务器的日志状态
+		
+	6：主数据库服务器已经停止了更新操作，生成主数据库的备份
+		1）cp全部的数据（主数据库服务器可以停止，这种方法更快）
+		2）mysqldump备份数据
+	7: 数据库备份完毕，解锁
+		unlock tables;
+	接着从服务器下执行以下命令，来连接主数据库，指定用户名和密码，以及配置文件名和相应的文件指针位置。
+	mysql下 执行以下命令
+	change master to master_host='192.32.4.24',master_user='repl',master_password='1111111',master_log_file='mysql-bin.000001', master_log_pos=348;
+       连接前要关闭防火墙
+	start slave; //启动从服务器功能
+	
+    reset slave;
+	stop slave;
+	mysqld_safe --user=mysql &  mysql重启
+	如果因为特殊问题，出现错误，可以通过看二进制文件来看上次复制到哪，
+	show slave status\G;来查看日志记录
+	
+内置函数
+	当这个字段
+	create table t2
+	(
+		id int auto_increment primary key,
+		name varchar(10) not null
+	);
+	insert into t3(id,name) values(null,'aaa');//连续执行多次，回达到理想的效果
+	insert into t3(id,name) values(0,'aaa');
+	insert into t3(name) values('aaa');
+	//以上这两种执行多次的效果是相同的，但删除数据后，再次插入数据后将从最大值继续插入
+
+索引
+	主键索引
+		主要作用确定数据库表里的一条特定数据记录的位置
+	唯一索引
+		每一个数据表都可以有多个唯一索引
+		unique来创建  用来避免数据出现重复
+		create table t2
+		(
+			id int auto_increment primary key,
+			name varchar(10) not null default ' ',
+			INDEX|UNIQUE|FULLTEXT INDEX [suoyinname](id,name,age),
+			//为id字段建立普通索引，其中索引名称如果没有指定的话将会默认为字段的名称
+			INDEX 普通索引
+			UNIQUE	唯一索引
+			FULLTEXT INDEX 全文索引
+			如果后面指定多个字段将会建立组合索引，组合索引遵从最左前缀原则， 例：创建组合索引(id,name,age)  相当于创建了(id,name,age) (id,name) (id)这三个索引
+		);
+	常规索引
+		最重要的技术，能够提升数据库的性能；索引优化，应优先考虑的就是常规索引
+	全文索引
+	
+创建表
+	create table if not exists tablename//如果不存在表tablename创建表。
+	(
+	   -- 表的具体定义信息--
+	);
+	用int类型来定义时间邮戳
+
+	default用来和not null 配合使用
+		create table t2
+		(
+			id int auto_increment primary key,
+			name varchar(10) not null default '你好'
+		);
+修改表
+	新增字段
+		alter table tablename add fieldname char(32);
+	修改字段
+		alter table tablename change|modify fieldname char(32);
+	删除字段
+		alter table tablename drop fieldname;
+	查看索引
+		show index from tablename \G //查看表中的索引
+	添加索引
+		alter table tablename add index [indexname](字段组合);//修改表添加索引
+		create index [indexname](字段组合) on tablename;//用来给已经创建好的表添加索引
+	分析查询语句索引使用情况
+		explain select * from book where tablename where sql \G //将会显示索引的使用情况
+数据库引擎
+	常用的表的引擎
+	Myisam ,批量插入速度快, 不支持事务,锁表
+	Innodb, 批量插入相对较慢,支持事务,锁行
+	
+	create table() type InnoDB;
+	create table() engine InnoDB;
+	两种表述方法的效果是相同的，用来修改用来存储表的引擎
+	
+	MyISAM 默认的引擎，成熟稳定，但在经常更新的时候会产生碎片
+	可以通过
+	OPTINIZE TABLE 表名 ; //清理碎片
+	//强调快速处理操作
+	缺点：有一些功能不支持
+	
+	InnoDB 表类型
+	是上面一种表类型的一种更新换代的类型
+	支持MyISAM所不支持的功能
+	缺点占用空间大
+	功能			MyISAM      	InnoDB
+	事务处理		不支持			支持
+	数据行锁定		不支持			支持
+	外键约束		不支持			支持
+	表空间占用		相对小			相对大
+	全文索引		支持			不支持
+	
+mysql内置的函数
+	一 字符串函数
+		php中的用的字符串函数，mysql的内置函数基本上都提供了
+		concat("str1","str2",...)//字符串拼接函数
+		select concat(lieming,"fdsf",leiming) from tablename;
+		insert(str,x,y,'insert')将字符串str,x位置开始的y个字符串长度替换为字符串insert
+		select insert("adfsdffsd",2,3,'hello')//替换后的结果是ahellodffsd
+		lower(str) upper(str)  将字符串转换大小写
+		left(str,x)   right(str,y)  分别返回最左边的x个字符，和最右边的y个字符
+		lpad(str,n,pad)  rpad(str,n,pad)  字符串pad对str左边或右边进行填充，直到字符串的长度为n个字符长度为止
+		trim(str) ltrim(str)  rtrim(str)  分别是去掉字符串两边，左边和右边的字符串空格
+		replace(str,a,b)用字符串b来替换str中出现的所有的a 字符串
+		strcmp(s1,s2)  用来比较两个字符串的  如果s1<s2 -1     s1>s2 1     s1=s2 0
+		substring(str,x,y)  返回字符串中的第x位置起的y字符串长度
+
+	二、数值函数
+		mysql直接允许使用四则运算
+		select 5/3;  1.6667
+		abs(x)  返回整数的绝对值
+		ceil(x)返回大于x的最小整数
+		floor(x)返回小于x的最大整数
+		mod(x,y)  x%y
+		rand()
+		round(x,y) 返回参数x的四舍五入的有y位小数的值
+		truncate(x,y)返回数字x截断为y位小数的结果
+		select truncate(1.66667,4);  1.6666
+	三 日期函数
+		用php的时间戳来完成
+		curdate()返回当前的日期
+		curtime();当前的时间
+		now();当前的日期和时间
+		unix_timestamp(now());  将当前的日期和时间整理成时间戳
+		from_unixtime(时间戳);
+		monthname(now())
+		week(now())
+		year(now())
+		hour(now())
+		dayofweek(now())//一周中的第几天
+		date_add(now(),interval num day)
+		minute(now())
+		date_format(now(),"%Y-%m-%d")
+		date_format(now(),"%Y年%m月%d日");
+		set lc_time_names='zh_CN';
+		select dayname(now());
+	四 流程控制函数
+		if(salary>3000,"high","low");
+		ifnull(salary,0)//如果为空的时候返回零
+		case
+		when salary<3000   then "low"
+		else "hign"
+	其他函数
+		database()
+		version()
+		user()
+		inet_aton('192.168.1.1'); //返回代表网络ip地址的字节序
+		inet_ntoa(上面的字节序);//将ip字节序转换为ip地址
+		password()用来设置系统用户的加密
+		md5()  用来对程序用户进行加密
+		select md5('fdsfdsf');

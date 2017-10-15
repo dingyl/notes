@@ -1,0 +1,722 @@
+﻿<?php
+	files.php
+		return array(
+			path1,
+			path2
+		);
+
+	$filepatharr = require_once files.php
+
+
+php数据库操作
+	$db = new mysqli("localhost","root","root","blog");
+	if($enum = mysqli_connect_errno()){
+	    die("数据库链接失败，错误码:".$enum);
+	}
+
+	$sql = "desc user";
+
+	$result = $db->query($sql);
+	$temp = array();
+	while($row = $result->fetch_assoc()){
+	    $temp[] = $row;
+	}
+
+
+递归创建目录
+	function makedir($path){
+	    if(is_dir($path)){
+		return true;
+	    }else{
+		makedir(dirname($path));
+		mkdir($path);
+	    }
+	}
+
+	或者
+	mkdir($path,0777,true);
+
+异常处理
+	try{
+	    if($error==0){
+		throw new Exception("信息错误",3);
+	    }
+	}catch(Exception $e){
+	    echo $e->getCode();
+	    echo $e->getFile();
+	    echo $e->getLine();
+	    echo $e->getMessage();
+	    echo $e->getPrevious();
+	    p($e->getTrace());
+	    echo $e->getTraceAsString();
+	}
+
+
+php语言中变量命名区分大小写，函数,类命名不区别大小写
+	new DEMO()和new demo();两者的效果是一样的
+	p($arr)和P($arr) 都是一样的效果
+
+self,parent关键字  ::用来访问类的属性和方法 ->用来访问对象的属性和方法
+
+static::$sex;//访问静态属性
+静态属性具有延迟绑定的效果
+class fruit{
+	public static $weight=23;
+	public function get_weight(){
+		return static::$weight;
+	}
+}
+
+class apple{
+	public static $weight=12;
+}
+
+$app = new apple();
+echo $app->get_weight();//12   将static::$weight改为self::$weight
+
+
+final public function test();用final修饰的方法不能继承
+
+魔术常量
+	魔术常量名称没有大小写的区分，建议按标准用大写的方式
+	__LINE__ 文件中的当前行号。  
+	__FILE__ 文件的完整路径和文件名。如果用在被包含文件中，则返回被包含的文件名。自 PHP 4.0.2 起，__FILE__ 总是包含一个绝对路径（如果是符号连接，则是解析后的绝对路径），而在此之前的版本有时会包含一个相对路径。  
+	__DIR__ 文件所在的目录。如果用在被包括文件中，则返回被包括的文件所在的目录。它等价于 dirname(__FILE__)。除非是根目录，否则目录中名不包括末尾的斜杠。（PHP 5.3.0中新增） =  
+	__FUNCTION__ 函数名称（PHP 4.3.0 新加）。自 PHP 5 起本常量返回该函数被定义时的名字（区分大小写）。在 PHP 4 中该值总是小写字母的。  
+	__CLASS__ 类的名称（PHP 4.3.0 新加）。自 PHP 5 起本常量返回该类被定义时的名字（区分大小写）。在 PHP 4 中该值总是小写字母的。  
+	__METHOD__ 类的方法名（PHP 5.0.0 新加）。返回该方法被定义时的名字（区分大小写）。  
+	__NAMESPACE__ 当前命名空间的名称（大小写敏感）。这个常量是在编译时定义的（PHP 5.3.0 新增）  
+
+魔术方法
+	__construct() 实例化类时自动调用。
+	__destruct() 类对象使用结束时自动调用。
+	__set() 在给未定义的属性赋值的时候调用。
+	__get() 调用未定义的属性时候调用。
+	__isset() 使用isset()或empty()函数时候会调用。
+	__unset() 使用unset()时候会调用。
+	__sleep() 使用serialize序列化时候调用。
+	__wakeup() 使用unserialize反序列化的时候调用。
+	__call() 调用一个不存在的方法的时候调用。
+	__callStatic()调用一个不存在的静态方法是调用。
+	__toString() 把对象转换成字符串的时候会调用。比如 echo。
+	__invoke() 当尝试把对象当方法调用时调用。
+	__set_state() 当使用var_export()函数时候调用。接受一个数组参数。
+	__clone() 当使用clone复制一个对象时候调用。
+
+pi()===M_PI    是相等的
+看似有穷的小数，在计算机看来却是无穷的
+php在变量转换的时候会将一个非空的字符串转换为bool值true
+
+类中用static修饰的静态方法，一般用来操作静态属性
+php中的函数不能够重复定义
+
+extract() //函数用来将变量从数组中导入到当前的符号表中，变为环境变量
+set_time_limit(0) ;  //设置php脚本的执行时间限制
+
+php报错设置
+	error_reporting();设置php的报错级别
+	php默认是不开启错误的，所以你需要配置php.ini文件：
+	display_errors = Off 改为display_errors = On
+
+页面静态化
+	//生成缓存
+	@ob_start();
+	ob_implicit_flush(0);
+	include($_SERVER['DOCUMENT_ROOT'].'/tmp/_tmp_template.html'); //include 缓存
+	$content = ob_get_clean();
+
+php中对于数组默认还是调用，不是引用。函数内的改变不会影响外部的值
+当请求一个php页面。php-cgi将会去解析这个页面。解析后就会生成相应的html代码。遇到引用文件的，解析文件。再将解析完成后的html页面包含进去。
+最后解析完成了，一个html页面也就生成了。最终将生成html页面返回个浏览器，让浏览器去渲染页面。
+
+文件引用
+	include();require();
+	require_once();include_once();
+	在php中include包含文件就是将文件的内容复制到当前的包含位置处。
+	www
+		test.php        include("demo/demo.php");
+		test1.php
+		demo
+			demo.php    include("test1.php");
+	这样运行test.php文件的时候，通过demo文件将test1.php文件包含进来
+	php中多层包含的时候，应该是在当前的上下文环境下，来解析即将包含的文件中的内容。如果解析的内容中还有引用文件的话，同样是在最开始的上下文环境下
+	来解析即将包含的文件。就这样直到最后没有文件引用。解析完成后将得到再包含进来。
+	
+global变量
+	global $name;
+	$name = "ding";
+	function show(){
+		global $name;
+		$name="yaoli";
+	}
+	function display(){
+		global $name;
+		echo $name;
+	}
+	show();
+	display();
+	函数外全局化的变量。在函数内如果不全局化也是无法使用的。
+	要想在函数内访问函数外的变量就需要在函数内将函数外的变量全局化。这样就可以访问了。
+	在函数内对全局变量的修改，是会影响函数外的变量的值的。
+
+汉字转拼音函数
+	function Pinyin($_String, $_Code='UTF8'){ //GBK页面可改为gb2312，其他随意填写为UTF8
+		$_DataKey = "a|ai|an|ang|ao|ba|bai|ban|bang|bao|bei|ben|beng|bi|bian|biao|bie|bin|bing|bo|bu|ca|cai|can|cang|cao|ce|ceng|cha".
+						"|chai|chan|chang|chao|che|chen|cheng|chi|chong|chou|chu|chuai|chuan|chuang|chui|chun|chuo|ci|cong|cou|cu|".
+						"cuan|cui|cun|cuo|da|dai|dan|dang|dao|de|deng|di|dian|diao|die|ding|diu|dong|dou|du|duan|dui|dun|duo|e|en|er".
+						"|fa|fan|fang|fei|fen|feng|fo|fou|fu|ga|gai|gan|gang|gao|ge|gei|gen|geng|gong|gou|gu|gua|guai|guan|guang|gui".
+						"|gun|guo|ha|hai|han|hang|hao|he|hei|hen|heng|hong|hou|hu|hua|huai|huan|huang|hui|hun|huo|ji|jia|jian|jiang".
+						"|jiao|jie|jin|jing|jiong|jiu|ju|juan|jue|jun|ka|kai|kan|kang|kao|ke|ken|keng|kong|kou|ku|kua|kuai|kuan|kuang".
+						"|kui|kun|kuo|la|lai|lan|lang|lao|le|lei|leng|li|lia|lian|liang|liao|lie|lin|ling|liu|long|lou|lu|lv|luan|lue".
+						"|lun|luo|ma|mai|man|mang|mao|me|mei|men|meng|mi|mian|miao|mie|min|ming|miu|mo|mou|mu|na|nai|nan|nang|nao|ne".
+						"|nei|nen|neng|ni|nian|niang|niao|nie|nin|ning|niu|nong|nu|nv|nuan|nue|nuo|o|ou|pa|pai|pan|pang|pao|pei|pen".
+						"|peng|pi|pian|piao|pie|pin|ping|po|pu|qi|qia|qian|qiang|qiao|qie|qin|qing|qiong|qiu|qu|quan|que|qun|ran|rang".
+						"|rao|re|ren|reng|ri|rong|rou|ru|ruan|rui|run|ruo|sa|sai|san|sang|sao|se|sen|seng|sha|shai|shan|shang|shao|".
+						"she|shen|sheng|shi|shou|shu|shua|shuai|shuan|shuang|shui|shun|shuo|si|song|sou|su|suan|sui|sun|suo|ta|tai|".
+						"tan|tang|tao|te|teng|ti|tian|tiao|tie|ting|tong|tou|tu|tuan|tui|tun|tuo|wa|wai|wan|wang|wei|wen|weng|wo|wu".
+						"|xi|xia|xian|xiang|xiao|xie|xin|xing|xiong|xiu|xu|xuan|xue|xun|ya|yan|yang|yao|ye|yi|yin|ying|yo|yong|you".
+						"|yu|yuan|yue|yun|za|zai|zan|zang|zao|ze|zei|zen|zeng|zha|zhai|zhan|zhang|zhao|zhe|zhen|zheng|zhi|zhong|".
+						"zhou|zhu|zhua|zhuai|zhuan|zhuang|zhui|zhun|zhuo|zi|zong|zou|zu|zuan|zui|zun|zuo";
+		$_DataValue = "-20319|-20317|-20304|-20295|-20292|-20283|-20265|-20257|-20242|-20230|-20051|-20036|-20032|-20026|-20002|-19990".
+						"|-19986|-19982|-19976|-19805|-19784|-19775|-19774|-19763|-19756|-19751|-19746|-19741|-19739|-19728|-19725".
+						"|-19715|-19540|-19531|-19525|-19515|-19500|-19484|-19479|-19467|-19289|-19288|-19281|-19275|-19270|-19263".
+						"|-19261|-19249|-19243|-19242|-19238|-19235|-19227|-19224|-19218|-19212|-19038|-19023|-19018|-19006|-19003".
+						"|-18996|-18977|-18961|-18952|-18783|-18774|-18773|-18763|-18756|-18741|-18735|-18731|-18722|-18710|-18697".
+						"|-18696|-18526|-18518|-18501|-18490|-18478|-18463|-18448|-18447|-18446|-18239|-18237|-18231|-18220|-18211".
+						"|-18201|-18184|-18183|-18181|-18012|-17997|-17988|-17970|-17964|-17961|-17950|-17947|-17931|-17928|-17922".
+						"|-17759|-17752|-17733|-17730|-17721|-17703|-17701|-17697|-17692|-17683|-17676|-17496|-17487|-17482|-17468".
+						"|-17454|-17433|-17427|-17417|-17202|-17185|-16983|-16970|-16942|-16915|-16733|-16708|-16706|-16689|-16664".
+						"|-16657|-16647|-16474|-16470|-16465|-16459|-16452|-16448|-16433|-16429|-16427|-16423|-16419|-16412|-16407".
+						"|-16403|-16401|-16393|-16220|-16216|-16212|-16205|-16202|-16187|-16180|-16171|-16169|-16158|-16155|-15959".
+						"|-15958|-15944|-15933|-15920|-15915|-15903|-15889|-15878|-15707|-15701|-15681|-15667|-15661|-15659|-15652".
+						"|-15640|-15631|-15625|-15454|-15448|-15436|-15435|-15419|-15416|-15408|-15394|-15385|-15377|-15375|-15369".
+						"|-15363|-15362|-15183|-15180|-15165|-15158|-15153|-15150|-15149|-15144|-15143|-15141|-15140|-15139|-15128".
+						"|-15121|-15119|-15117|-15110|-15109|-14941|-14937|-14933|-14930|-14929|-14928|-14926|-14922|-14921|-14914".
+						"|-14908|-14902|-14894|-14889|-14882|-14873|-14871|-14857|-14678|-14674|-14670|-14668|-14663|-14654|-14645".
+						"|-14630|-14594|-14429|-14407|-14399|-14384|-14379|-14368|-14355|-14353|-14345|-14170|-14159|-14151|-14149".
+						"|-14145|-14140|-14137|-14135|-14125|-14123|-14122|-14112|-14109|-14099|-14097|-14094|-14092|-14090|-14087".
+						"|-14083|-13917|-13914|-13910|-13907|-13906|-13905|-13896|-13894|-13878|-13870|-13859|-13847|-13831|-13658".
+						"|-13611|-13601|-13406|-13404|-13400|-13398|-13395|-13391|-13387|-13383|-13367|-13359|-13356|-13343|-13340".
+						"|-13329|-13326|-13318|-13147|-13138|-13120|-13107|-13096|-13095|-13091|-13076|-13068|-13063|-13060|-12888".
+						"|-12875|-12871|-12860|-12858|-12852|-12849|-12838|-12831|-12829|-12812|-12802|-12607|-12597|-12594|-12585".
+						"|-12556|-12359|-12346|-12320|-12300|-12120|-12099|-12089|-12074|-12067|-12058|-12039|-11867|-11861|-11847".
+						"|-11831|-11798|-11781|-11604|-11589|-11536|-11358|-11340|-11339|-11324|-11303|-11097|-11077|-11067|-11055".
+						"|-11052|-11045|-11041|-11038|-11024|-11020|-11019|-11018|-11014|-10838|-10832|-10815|-10800|-10790|-10780".
+						"|-10764|-10587|-10544|-10533|-10519|-10331|-10329|-10328|-10322|-10315|-10309|-10307|-10296|-10281|-10274".
+						"|-10270|-10262|-10260|-10256|-10254";
+		$_TDataKey   = explode('|', $_DataKey);
+		$_TDataValue = explode('|', $_DataValue);
+		$_Data = array_combine($_TDataKey, $_TDataValue);
+		arsort($_Data);
+		reset($_Data);
+		if($_Code!= 'gb2312') $_String = _U2_Utf8_Gb($_String);
+		$_Res = '';
+		for($i=0; $i<strlen($_String); $i++) {
+				$_P = ord(substr($_String, $i, 1));
+				if($_P>160) {
+						$_Q = ord(substr($_String, ++$i, 1)); $_P = $_P*256 + $_Q - 65536;
+				}
+				$_Res .= _Pinyin($_P, $_Data);
+		}
+		return preg_replace("/[^a-z0-9]*/", '', $_Res);
+	}
+	function _Pinyin($_Num, $_Data){
+		if($_Num>0 && $_Num<160 ){
+				return chr($_Num);
+		}elseif($_Num<-20319 || $_Num>-10247){
+				return '';
+		}else{
+				foreach($_Data as $k=>$v){ if($v<=$_Num) break; }
+				return $k;
+		}
+	}
+	function _U2_Utf8_Gb($_C){
+		$_String = '';
+		if($_C < 0x80){
+				$_String .= $_C;
+		}elseif($_C < 0x800) {
+				$_String .= chr(0xC0 | $_C>>6);
+				$_String .= chr(0x80 | $_C & 0x3F);
+		}elseif($_C < 0x10000){
+				$_String .= chr(0xE0 | $_C>>12);
+				$_String .= chr(0x80 | $_C>>6 & 0x3F);
+				$_String .= chr(0x80 | $_C & 0x3F);
+		}elseif($_C < 0x200000) {
+				$_String .= chr(0xF0 | $_C>>18);
+				$_String .= chr(0x80 | $_C>>12 & 0x3F);
+				$_String .= chr(0x80 | $_C>>6 & 0x3F);
+				$_String .= chr(0x80 | $_C & 0x3F);
+		}
+		return iconv('UTF-8', 'GB2312', $_String);
+	}
+	//测试
+	echo Pinyin('中文字','gb2312'); //默认为utf-8编码。如果为gb2312请指明第二个参数
+
+生成qr二维码：
+	方式一：调用接口
+		生成二维码接口     <img src="http://qr.liantu.com/api.php?text=hello"/>自动生成二维码图片
+
+方式二：引用phpqrcode二维码库
+	引用代码
+	require_once("../phpqrcode/phpqrcode.php");
+	$value="http://www.csdn.net";//想要生成的二维码信息
+	$errorCorrectionLevel = "L";
+	$matrixPointSize = "4";
+	QRcode::png($value, false, $errorCorrectionLevel, $matrixPointSize);
+	exit;//这样将生成一张二维码图片
+
+支付模块
+	php在调用第三方支付接口和更新自己的数据库信息时，如何保证数据的一致性
+	首先保证自己这边的数据一致性，
+	假设第三方借口可以保证数据一致性。
+	解决方案，开启事务，先将自己这边需要修改的数据信息，进行加锁。
+	调用第三方接口，数据返回成功后。更新自己的数据，commit提交，结束事务。
+	支付宝原理和流程
+	商家网站应该提供订单页面，状态页面，返回页面。其中状态页面可以没有，有的话更加安全。
+
+	支付页面传递给支付平台的信息.   
+		支付平台的账号。
+		订单号，订单产品信息，价格，预览等辅助信息。
+		传递到支付宝平台后。将转到支付接口，支付宝完成代收的功能后，将会及时的返回一个支付状态给状态页面。返回的信息，包括价格，订单号。等信息。
+		最后支付完毕，将返回到返回页面。并返回相应的订单信息和数据，这时我们再更新本地的数据库。
+
+pdo数据库操作
+	$dsn = "mysql:host=localhost;dbname=try";
+	$db = new PDO($dsn,'root','');
+	$stmt = $db->prepare("select * from msg where sender = :sender");
+	$sender = "s2";
+	$stmt->bindParam(":sender",$sender,PDO::PARAM_STR);
+	$stmt->execute();
+	$temp = array();
+	while($row = $stmt->fetch()){
+		array_push($temp, $row);
+	}
+
+clone()  
+	函数复制的对象是浅复制，如果当对象的属性中也有对象，那么这个对象在副本和原始对象中都是一样的。这时可以重写类的__clone()方法在clone的时候再对这个对象属性进行一次复制。
+	class person{}
+	class user{
+		public $name=10;
+		public $person;
+
+		public function __construct(person $person){
+			$this->person = $person;
+		}
+
+		public function __set($key,$value){
+			echo $key." ".$value;
+		}
+
+		public function __clone(){
+			$this->person = clone($this->person);
+		}
+	}
+	$person = new person();
+	$user = new user($person);
+	$user2 = clone($user);
+
+xml文件的处理
+	$xml = simplexml_load_file($file);
+	$xml->xpath("/conf/item[@name=\"ding\"]")
+	$xml->addChild('item',$value)->addAttribute('name',$key)
+	file_put_contents($file,$xml->asXML())
+
+	
+延迟绑定，可以用作工厂方法
+	abstract class domain{
+		public static function create(){
+			return new static();
+		}
+	}
+
+	class user extends domain{
+		public $name=10;
+	}
+
+	class document extends domain{
+		public $age=100;
+	}
+
+	$user = new user();
+	p($user);
+	p(user::create()->name);
+
+异常处理
+	file_exists()
+	is_writeable()
+	basename()
+	is_object()
+	class_exists()
+	call_user_func('p',array(1,2,3,4),"name");
+	call_user_func_array('p',array(array(1,2,3,4),"name"));
+
+	get_declared_classes()
+	get_class()
+	instanceof   可以判断类和接口   强大
+	get_class_methods()
+	method_exists()
+	get_class_vars()
+	get_parent_class()
+	is_subclass_of('son','parent')  检测一个类是不是另一个类的派生类
+	class_implements()返回一个类实现的接口数组
+
+	异常类的方法
+		getMessage()
+		getCode()
+		getFile()
+		getLine()
+		getPrevious()
+		getTrace()
+		__toString()
+
+	反射API
+		Reflection::export()
+		ReflectionClass
+		ReflectionMethod
+		ReflectionParameter
+
+命名空间
+	namespace main;
+	\com\geinstan\util\debug::helloworld();  //使用绝对命名方式调用，去掉前面的\ ，就使用了相对的命名方式去调用了并在其前面添加main\ 进行引用
+	__NAMESPACE__
+处理输出的乱码问题
+	header("Content-type:text/html;charset=utf-8");
+	
+注意：
+	while(!feof($hd)){
+		$str = fgets($hd);
+		//当调用fgets函数的时候feof返回的就是false。
+		//所以应该再次对$str进行进行判断防止进入死循环
+	}
+
+
+linux文件权限
+	第一个数字永远是 0
+	第二个数字规定所有者的权限
+	第二个数字规定所有者所属的用户组的权限
+	第四个数字规定其他所有人的权限
+	可能的值（如需设置多个权限，请对下面的数字进行总计）：
+
+	1 - 执行权限
+	2 - 写权限
+	4 - 读权限
+
+
+system  exec 函数执行命令，会等待命令执行完毕的返回数据
+在sh执行php脚本的时候，php脚本中是无法获取$_SERVER 中的一些信息，比如host信息
+$_SERVER中的几个关键
+	localhost/oldphp/test.php/ding/mei?age=23
+	PATH_INFO    /ding/mei
+	QUERY_STRING  age=23
+	REQUEST_METHOD  GET|POST
+	REQUEST_URL   /oldphp/test.php/ding/mei?age=23
+连接超时自动重试
+	$cnt=0;while($cnt < 3 && ($result=@vita_get_url_content($urls))===FALSE) $cnt++;
+	
+$_REQUEST获取的数据包含GET,POST,COOKIE,SESSION 所有数据而且按照EGPCS的优先级别，越往后级别越高
+
+另类图片输出方式
+	$src = "data:img/jpg;base64,".base64_encode(file_get_contents("test.jpg"));
+	echo "<img src='{$src}'/>";
+调试技巧
+    追踪请求，打印数据
+    curl请求的链接不存在时，有可能不会有提示（未验证）
+    error_log(message,3,path);
+
+常用函数
+	is_string
+	is_bool
+	preg_match	
+	setcookie("TestCookie", $value);
+	setcookie("TestCookie", $value, time()+3600);  /* expire in 1 hour */
+	setcookie("TestCookie", $value, time()+3600, "/~rasmus/", "example.com", 1);
+	getimagesize();
+	strtotime("1990-03-17 12:23:11");转换成时间戳
+	echo mb_strlen($str,'UTF8');//返回汉字的个数
+	number_format();  格式化数字，多少位，多少个小数位
+	error_log("You messed up!", 3, "error.log");  将信息追加到error.log文件中
+	error_log("fdsfdf", 3, __file__.'.log');
+	explode(',',$str);
+	implode(',',$arr);
+	strlen($str);
+	substr($str,$start,$length);
+	str_replace(',','',$str)
+	set_time_limit(0)
+	extract($arr) //从数组中将变量导入到当前的符号表
+	trim($str,' ');  rtrim
+	preg_match_all($pattern,$str,$matches);
+	array_push($arr,$val);
+	array_filter() 依次将 input 数组中的每个值传递到 callback 函数。如果 callback 函数返回 TRUE，则 input 数组的当前值会被包含在返回的结果数组中。数组的键名保留不变。
+	in_array($val,$arr);
+	is_array();
+	array_chunk();
+	array_split();
+	rand,range
+	move_uploaded_file($source,$destition);
+	isset();
+	count();
+	unset();
+	addslashes($str);加反斜线
+	stripslashes($str);去反斜线
+	call_user_func($funcname,$argument);
+	htmlspecialchars($str);
+	iconv('GB2312','UTF-8',$str);
+	$data = array('foo'=>'bar',
+				  'baz'=>'boom',
+				  'cow'=>'milk',
+				  'php'=>'hypertext processor');
+	echo http_build_query($data); // foo=bar&baz=boom&cow=milk&php=hypertext+processor
+	parse_url()
+	parse_str()
+	strstr($str,"?")
+	microtime(true);
+	rand($start,$end);
+	pathinfo();
+	is_dir();
+	file_exists();
+	filesize
+	unlink();
+	ord() 转换成ascii值
+	chr() 转换成字符
+	shuffle($arr);  //打乱数组
+
+	header("Content-Type: text/html; charset=UTF-8");
+	header('Location: ./admin.php?m=mobilemanager_addadvertise&id='.$vars['adid']);exit;
+	function p($arr){
+		echo "<pre>";
+		print_r($arr);
+		echo "</pre>";
+	}
+	function success($url,$msg){
+		header('Content-Type:text/html;charset=utf-8');
+		echo "<script type='text/javascript'>alert('{$msg}');location.href='".site_url($url)."'</script>";
+	}
+	function error($msg){
+		header('Content-Type:text/html;charset=utf-8');
+		echo "<script type='text/javascript'>alert('{$msg}');window.history.back();</script>";
+	}
+	
+	
+PHP数据类型转换
+	PHP的数据类型转换属于强制转换，允许转换的PHP数据类型有：
+	（int）、（integer）：转换成整形
+	（float）、（double）、（real）：转换成浮点型
+	（string）：转换成字符串
+	（bool）、（boolean）：转换成布尔类型
+	（array）：转换成数组
+	（object）：转换成对象
+	PHP数据类型有三种转换方式：
+	在要转换的变量之前加上用括号括起来的目标类型
+	使用3个具体类型的转换函数，intval()、floatval()、strval()
+	使用通用类型转换函数settype(mixed var,string type)
+	第一种转换方式： (int)  (bool)  (float)  (string)  (array) (object)
+	<?php    
+	$num1=3.14;    
+	$num2=(int)$num1;    
+	var_dump($num1); //输出float(3.14)    
+	var_dump($num2); //输出int(3)    
+	?>   
+	第二种转换方式：  intval()  floatval()  strval()
+	<?php    
+	$str="123.9abc";    
+	$int=intval($str);     //转换后数值：123    
+	$float=floatval($str); //转换后数值：123.9    
+	$str=strval($float);   //转换后字符串："123.9"     
+	?>   
+	第三种转换方式：  settype();
+	<?php
+	$num4=12.8;
+	$flg=settype($num4,"int");
+	var_dump($flg);  //输出bool(true)
+	var_dump($num4); //输出int(12)
+	?>
+	
+php进制转换
+	一，十进制（decimal system）转换函数说明
+	1，十进制转二进制 decbin() 函数，如下实例
+	echo decbin(12); //输出 1100
+	echo decbin(26); //输出 11010
+	decbin
+	(PHP 3, PHP 4, PHP 5)
+	decbin -- 十进制转换为二进制
+	说明
+	string decbin ( int number )
+	返回一字符串，包含有给定 number 参数的二进制表示。所能转换的最大数值为十进制的 4294967295，其结果为 32 个 1 的字符串。
+	2，十进制转八进制 decoct() 函数
+	echo decoct(15); //输出 17
+	echo decoct(264); //输出 410
+	decoct
+	(PHP 3, PHP 4, PHP 5)
+	decoct -- 十进制转换为八进制
+	说明
+	string decoct ( int number )
+	返回一字符串，包含有给定 number 参数的八进制表示。所能转换的最大数值为十进制的 4294967295，其结果为 "37777777777"。
+	3，十进制转十六进制 dechex() 函数
+	echo dechex(10); //输出 a
+	echo dechex(47); //输出 2f
+	dechex
+	(PHP 3, PHP 4, PHP 5)
+	dechex -- 十进制转换为十六进制
+	说明
+	string dechex ( int number )
+	返回一字符串，包含有给定 number 参数的十六进制表示。所能转换的最大数值为十进制的 4294967295，其结果为 "ffffffff"。
+	二，二进制（binary system）转换函数说明
+	1，二进制转十六制进 bin2hex() 函数
+	$binary = "11111001";
+	$hex = dechex(bindec($binary));
+	echo $hex;//输出f9
+	bin2hex
+	(PHP 3 >= 3.0.9, PHP 4, PHP 5)
+	bin2hex -- 将二进制数据转换成十六进制表示
+	说明
+	string bin2hex ( string str )
+	返回 ASCII 字符串，为参数 str 的十六进制表示。转换使用字节方式，高四位字节优先。
+	2，二进制转十制进 bindec() 函数
+	echo bindec('110011'); //输出 51
+	echo bindec('000110011'); //输出 51
+	echo bindec('111'); //输出 7
+	bindec
+	(PHP 3, PHP 4, PHP 5)
+	bindec -- 二进制转换为十进制
+	说明
+	number bindec ( string binary_string )
+	返回 binary_string 参数所表示的二进制数的十进制等价值。
+	bindec() 将一个二进制数转换成 integer。可转换的最大的数为 31 位 1 或者说十进制的 2147483647。PHP 4.1.0 开始，该函数可以处理大数值，这种情况下，它会返回 float 类型。
+	三，八进制转十进制（octal system）转换函数说明
+	八进制转十进制 octdec() 函数
+	echo octdec('77'); //输出 63
+	echo octdec(decoct(45)); //输出 45
+	octdec
+	(PHP 3, PHP 4, PHP 5)
+	octdec -- 八进制转换为十进制
+	说明
+	number octdec ( string octal_string )
+	返回 octal_string 参数所表示的八进制数的十进制等值。可转换的最大的数值为 17777777777 或十进制的 2147483647。PHP 4.1.0 开始，该函数可以处理大数字，这种情况下，它会返回 float 类型。
+	四，十六进制（hexadecimal）转换函数说明
+	十六进制转十进制 hexdec()函数
+	var_dump(hexdec("See"));
+	var_dump(hexdec("ee"));
+	// both print "int(238)"
+	var_dump(hexdec("that")); // print "int(10)"
+	var_dump(hexdec("a0")); // print "int(160)"
+	hexdec
+	(PHP 3, PHP 4, PHP 5)
+	hexdec -- 十六进制转换为十进制
+	说明
+	number hexdec ( string hex_string )
+	返回与 hex_string 参数所表示的十六进制数等值的的十进制数。hexdec() 将一个十六进制字符串转换为十进制数。所能转换的最大数值为 7fffffff，即十进制的 2147483647。PHP 4.1.0 开始，该函数可以处理大数字，这种情况下，它会返回 float 类型。
+	hexdec() 将遇到的所有非十六进制字符替换成 0。这样，所有左边的零都被忽略，但右边的零会计入值中。
+	五，任意进制转换 base_convert() 函数
+	$hexadecimal = 'A37334';
+	echo base_convert($hexadecimal, 16, 2);//输出 101000110111001100110100
+	base_convert
+	(PHP 3 >= 3.0.6, PHP 4, PHP 5)
+	base_convert -- 在任意进制之间转换数字
+	说明
+	string base_convert ( string number, int frombase, int tobase )
+	返回一字符串，包含 number 以 tobase 进制的表示。number 本身的进制由 frombase 指定。frombase 和 tobase 都只能在 2 和 36 之间（包括 2 和 36）。高于十进制的数字用字母 a-z 表示，例如 a 表示 10，b 表示 11 以及 z 表示 35。
+	
+字符编码转换
+	$content = iconv("utf-8","gb2312",$content);将utf-8编码转换成gb2312编码
+	
+无限级树打印
+	function p($arr){
+		echo "<pre>";
+		print_r($arr);
+		echo "</pre>";
+	}
+	function getAll(){
+		$temp = array();
+		$dsn = "mysql:host=localhost;dbname=tree";
+		$db = new PDO($dsn,'root','');
+		//$stmt = $db->prepare("select * from catagory where pid = :pid");
+		//$stmt->bindParam(":pid",$id,PDO::PARAM_INT);
+		$stmt = $db->prepare("select * from catagory");
+		$stmt->execute();
+		while($row = $stmt->fetch()){
+			array_push($temp,$row);
+		}
+		return $temp;
+	}
+	function getChild($pid,$tree){  //递归获取子元素
+		$temp = array();
+		//如果没有子元素就跳出了，返回一个空数组
+		foreach($tree as $k=>$v){
+			if($v['pid']===$pid){   
+				$v['childs']=getChild($v['id'],$tree);
+				if(count($v['childs'])==0){ //如果子是空数组的话，就清掉childs属性
+					unset($v['childs']);
+				}
+				array_push($temp, $v);
+			}
+		}
+		return $temp;
+	}
+	function publish($arr,$level=0){//分层结构打印树形结构  递归打印
+		foreach($arr as $k=>$v){
+			$placeholder = '';//前面要打印的占位符
+			$tempLevel = $level;
+			while($tempLevel-->0){
+				$placeholder.="--";
+			}
+			
+			if(isset($v['childs'])){
+				echo $placeholder.$v['name']."&nbsp; disabled<br>";//如果不是叶结点将禁止选择
+				publish($v['childs'],$level+1);
+			}else{
+				echo $placeholder.$v['name']."<br>";
+			}
+		}
+	}
+	$startTime = microtime(true);
+	//do something
+		$arr = getAll();   //不限制  父级id小于子级id
+		$childs = getChild('0',$arr);//获取所有分类的树结构
+		publish($childs);
+	//end
+	$endTime = microtime(true);
+	echo ($endTime - $startTime);
+
+curl上传文件
+	function post_url($filename,$time=30)
+	{
+		global $img_dir;
+		$files = $_FILES[$filename]["tmp_name"];
+		if(is_array($files)){
+		foreach ($files as $key => $value) {
+		$post_data = array(
+				'id' => '0',
+				'type'=>2,
+				'aucode' => "boqii",
+				'subtype' => '4',
+				 'filename' => $filename,
+				'upfile'=>"@".$files[0]
+			);
+		}
+		}else{
+		$post_data = array(
+				'id' => '0',
+				'type'=>2,
+				'aucode' => "boqii",
+				'subtype' => '4',
+				'filename' => $filename,
+				'upfile'=>"@".$files
+			);
+		}
+			$url = $img_dir."/Server/upload.php";
+		$time = ($time<=30)? $time:30;
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_POST, 1);  
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+		curl_setopt($ch, CURLOPT_TIMEOUT, $time);
+		$output = curl_exec($ch);
+		curl_close($ch);
+		error_log($output."-".$url,3,"img_error.log");
+		return $output;
+	}
+	
+php重要代码保密
+	文件设置严格的查看权限
+	源代码加密

@@ -1,0 +1,1025 @@
+杂记
+	每个浏览器都有一个js线程和一个渲染线程，默认情况下只有当js线程执行完毕才会执行渲染操作。如果想要让实行实时渲染，那就需要将js加载放在文件的最后面
+	style操作的是行间样式，通过style获取的是行间样式
+	typeof obj //判断obj的类型
+	
+	arguments 为当前函数执行函数返回一个arguments对象
+	arguments.length 为当前执行函数的参数个数
+	function arg(name,age){
+		console.log(arguments);  //打印的是传给函数的所有参数
+		console.log(name+age);
+	}
+	
+	document.oncontentmenu = function(ev){return false;//阻止浏览器右键默认菜单事件}
+	<meta?http-equiv="Cache-Control"?content="max-age=5"?/>??
+	console.log(String.fromCharCode(72,69,76,76,79)); 将ASCII值数组转化成字符串
+	
+页面打印
+	window.print();
+
+定义一个空的链接
+	<a href="javascript:;">
+设置网页的title标签内容
+	document.title=odiv.offsetWidth+"|"+'px';
+阻止缓存
+	缓存是根据url来的，只要改变url就能够阻止缓存带来的影响
+canvas操作
+	canvas video 元素与与通常的html标签不一样，当要设置他们的宽和高时
+	var ov= document.getElmentById('video');
+	ov.width=200; //这样便可以设置他们的宽度了
+	
+文件上传
+	通过js可以获取选择的文件的本地具体路径
+	function show(){
+		var ofile = document.getElementById('file');
+		alert(ofile.value);   
+	}
+	<input id='file' type='file' />
+	<button onclick='show()'>确定</button>
+
+页面滚动情况
+	document.documentElement.scrollTop||document.body.scrollTop
+	document.documentElement.clientTop
+	document.documentElement.clientLeft
+	odiv.style.top由两部分组成 
+	document.documentElement.scrollTop||document.body.scrollTop和document.documentElement.clientTop两部分组成
+	oevent.clientX    oevent.clientY  获取事件点击时的鼠标位置
+	event.pageX 和 event.pageY 来表示鼠标相对于文档的位置，如果你有一个 500*500 的窗口并且你的鼠标在绝对中间，
+	那么 pageX 和 pageY  的值都是 250，如果你向下滚动  500， 那么 pageY 将变成 750。
+键盘事件
+	document.onkeydown=function(ev)
+	{
+		var oEvent=ev||event;
+		if(oEvent.ctrlKey&&oEvent.keyCode==13)
+		{
+			alert('ctrlkey down');
+		}
+		if(oEvent.altKey)
+		{
+			alert('altKey down');
+		}
+		if(oEvent.shiftKey)
+		{
+			alert('altKey down');
+		}
+	};
+
+取消当前事件的冒泡
+	obtn.onclick=function(ev)
+	{
+		var oEvent=ev||event;
+		alert("this is a btn");
+		oEvent.cancelBubble=true;//1:取消冒泡，兼容性相当的好
+		//2:return false();通过返回false来取消默认的行为并阻止事件起泡。
+	};
+
+js面向对象
+	声明类
+		function createperson(name,qq)  //这种函数被称为构造函数
+		{
+			var obj=new object();
+			obj.name=name;
+			obj.qq=qq;
+			obj.showname=function()
+			{
+				
+			};
+			obj.showqq=function()
+			{
+				
+			};
+			return obj;
+		}
+		var obj=createperson('fsdf','fsdf');//没有使用new来申请    这种当大量申请对象时，将占用大量资源
+		function createperson(name,qq)  //这是标准的建立对象函数的方法  
+		{
+			this.name=name;
+			this.qq=qq;
+			this.showname=function()
+			{
+				
+			};
+			this.showqq=function()
+			{
+				
+			};
+		}
+	实例对象
+		任何函数前面都可以用new
+		var obj=new createperson('fsdf','fsdf');//没加new时函数内的this指向window，加上new后函数内的this指向 对象
+
+	原型的使用prototype
+		用构造函数来加属性，用原型来添加方法
+		var arr1=new Array(12,23,43,54,45);
+		var arr2=new Array(43,54,45);
+		Array.prototype.sum=function()//这样写arr1,arr2两个对象都可以使用sum方法
+		//arr1.sum=function()
+		{
+			var result=0;
+			for(var i=0;i<this.length;i++)
+			{
+				result+=this[i];
+			}
+			return result;
+		};//这个时候只有arr1有sum这个方法。*/
+		通过json来实现面向对象简单，但不适合实现多个对象。适合于单体，适合Ajax对象。
+		function show()
+		{
+			alert(this);
+		}
+		show();
+		show.call();这两种表示方式一样
+		但show.call(12) 可以传递参数来改变show函数中的this
+		function a()
+		{
+			this.abc=12;
+		}
+		a.prototype.show=function()
+		{
+			alert(this.abc);
+		}
+		function b()
+		{
+			a.call(this);//这样b就继承了a的所有属性，多使用几个call方法，就能够实现多重继承
+		}
+		b.prototype=a.prototype   //这样就继承了a的方法
+		此后将b添加了一个方法fn，但a也添加了这个方法。因为在js中元素赋值时，是使两个变量指向同一个地址。
+		但是如何真正的不是指向地址的应用呢！可以先申请一个空的变量，然后遍历，将值赋给这个空的变量
+		
+日期的获取
+	日期初始化
+		var date = new Date(2005,12,23,10,24,24);  得到的是2006年1月
+		var date1 = new Date("2005/12/23 10:24:24");  得到的正常
+		var odate=new date();
+	日期使用
+		odate.getTime() 方法可返回距 1970 年 1 月 1 日之间的毫秒数。
+		odate.setDate(odate.getDate()+天数);
+		alert(odate.getFullYear()+'-'+(odate.getMonth()+1)+'-'+odate.getDate());
+	
+cookie的设置
+	谷歌浏览器下不能alert  网页的cookie内容
+	cookie的特性
+	同一个网站（同一域名下）中所有页面共享一套cookie  数量(50条以内)、大小有限(4k-10k)  过期时间
+	js中通过document.cookie  来设置和获取cookie
+	如果不指定cookie的过期时间的话，那么到了浏览器关闭的时候cookie就删除了
+	cookie的js设置需要再服务器环境下，本地环境默认不存储cookie信息
+	document.cookie='user=blue;expires='+odate;//设置cookie的过期日期
+	
+	添加cookie
+		function setCookie(name,value,iday)
+		{
+			var odate = new Date();
+			odate.setDate(odate.getDate()+iday);
+			document.cookie=name+'='+value+';expires='+odate;
+		}
+	读取cookie
+		function getCookie(name)
+		{
+			var arr = document.cookie.split('; ');
+			//alert(arr);
+			for(var i=0;i<arr.length;i++)
+			{
+				var arr2=arr[i].split('=');
+				if(arr2[0]==name)
+				{
+					return arr2[1];
+				}
+			}
+		}
+	删除cookie
+		function removeCookie(name)
+		{
+			setCookie(name,1,-1);
+		}
+
+	//document.cookie='user=ding';
+	//document.cookie='pass=134324';
+	//document.cookie='direction=top'
+	//function $(id){return document.getElementById(id);}
+	//setCookie('user','dingding',2);
+	//setCookie('pass','24324324',2);
+	//removeCookie('user');
+	removeCookie('pass');
+	alert(document.cookie);
+	//getCookie('pass');
+	//var k=30;
+	//var odate = new Date();
+	//odate.setDate(odate.getDate()+k);
+	//alert(odate.getFullYear()+"-"+(odate.getMonth()+1)+"-"+odate.getDate());
+	//alert(odate.getDate());
+
+ajax技术
+	在js中如果直接使用一个未定义的变量将会报错，但如果使用的没有定义的属性，将会显示未定义XMLHttpRequest在IE6中未定义，直接引用将会报错，但如果这样使用的话window.XMLHttpRequest将不会报错，只是为定义而已
+	需要服务器环境支持
+	//ajax工作原理
+	//创建ajax对象
+	//连接到服务器
+	//发送请求
+	//接收返回值           文件的编码必须统一，或者文件中的中文将不能够识别，出现乱码
+	//ajax数据类型xml  json  建议使用utf-8编码
+	//同等数据量的情况下，xml文件比json文件大的多。现在多数使用json数据
+	function ajax(url,fnSucc,fnFail)
+	{
+		//创建ajax对象
+		if(window.XMLHttpRequest)
+		{
+			var xml = new XMLHttpRequest();//只兼容ie6以上的所有浏览器
+		}
+		else
+		{
+			var xml= new ActiveXObject("Microsoft.XMLHTTP");//适用于IE6
+		}
+		//连接到服务器 方法   open(方法(GET方式或者POST方式)，文件名，异步传输)
+		xml.open('GET',url,true);//true表示使用异步方式  在后面加上当前的数据信息值是为了阻止缓存
+		//发送请求   +'?t='+new Data().getTime()
+		xml.send();
+		//接收返回值
+		
+		xml.onreadystatechange=function()//但返回信息的时候
+		{
+			if(xml.readyState==4)//代表读取完成
+			{
+				if(xml.status==200)//代表读取成功
+				{
+					fnSucc(xml.responseText);//将信息传递到函数中
+					//当成功的时候，获取想要从服务器中获取的信息值
+				}
+				else
+				{
+					fnFail();//但失败的时候执行这个函数;
+				}
+			}
+		};
+	}
+	通过ajax读取的任何数据都是以字符串的形式
+	eval(str);//是将str中的语句解析成js能够识别的内容
+	
+JS全局变量声明
+	声明方式1：
+		var test;
+		var test = 5;
+		需注意的是该句不能包含在function内，否则是局部变量。这是第一种方式声明全局变量。
+
+	声明方式2：
+		test = 5;
+		没有使用var，直接给标识符test赋值，这样会隐式的声明了全局变量test。即使该语句是在一个function内，当该function被执行后test变成了全局变量。
+
+	声明方式3：
+		window.test;
+		window.test = 5;
+
+碰撞检测
+	弹性运动不适应的地方  由于弹性运动会出现过界问题，有些过界问题会产生错误
+	弹性运动没有缓冲运动的适用范围广
+	
+	矩形碰撞检测
+		div1(x1,y1,w1,h1)           div2(x2,y2,w2,h2)
+		div1的中心点坐标为（x1+w1/2,y1+h1/2）      div2的中心点坐标为（x2+w2/2,y2+h2/2）
+		两个div相互碰撞的条件是(w1+w2)/2>=|(x2-x1)(w2-w1)|/2   &&   (h1+h2)/2>=|(h2-h1)(h2-h1)|/2
+
+	圆形的话将更加简单
+		根据圆形的相交条件    r1+r2>=两圆的中心距
+		Math.sin(x)      x 的正玄值。返回值在 -1.0 到 1.0 之间；
+		Math.cos(x)    x 的余弦值。返回的是 -1.0 到 1.0 之间的数；
+		这两个函数中的X 都是指的“弧度”而非“角度”，弧度的计算公式为： 2*PI/360*角度；
+		Math.cos(3 * Math.PI) + Math.sin(Math.LN10) y = Math.tan(14 * Math.E)
+		Math对象为我们提供了很多用于数学计算的方法和一些常量?alert（Math.PI）；//输出π；
+		alert（Math.pow(10,3)）；//输出10的立方；?varnum=23.34;?
+		alert（Math.ceil(num)）；//返回大于等于num的最小整数，?
+		alert（Math.floor(num)）；//返回小于等于num的最大整数；?
+		alert（Math.round(num)）；//返回与num最接近的整数（四舍五入）。?
+		alert（Math.random()）；//返回介于0和1之间的伪随机数。产生的伪随机数介于0和1之间（含0不含1）；?
+		alert（Math.max(2,3,4)）；//返回多个数值参数中最大的那个；?
+		alert（Math.min(2,3,4)）；//返回多个数值参数中最小的那个；?
+		alert（Math.sqrt(2)）；//返回一个数的平方根；?
+		alert（Math.SQRT2）；//返回2的平方根；?
+		alert（Math.SQRT1/2）；//返回1/2的平方根；
+
+DOM操作
+	元素查找与编辑
+		本例查找 id="intro" 元素：
+		var x=document.getElementById("intro");
+		<!DOCTYPE html>
+		<html>
+			<body>
+				<p id="p1">Hello World!</p>
+					<script>
+						document.getElementById("p1").innerHTML(innerText)="New text!";
+					</script>
+				<p>上面的段落被一条 JavaScript 脚本修改了。</p>
+			</body>
+		</html>
+		本例查找 id="main" 的元素，然后查找 "main" 中的所有 <p> 元素：
+		var x=document.getElementById("main");
+		var y=x.getElementsByTagName("p");
+		
+		不能直接通过classname来选择元素
+		var oul=document.getElementById('ull');
+		var oli=oul.getElementsByTagName('li');
+		for(var i=0; i<oli.length;i++)
+		{
+			if(oli[i].className=='box')
+			{
+				oli[i].style.background='red';
+			}
+		}//通过元素的classname来集中处理元素
+
+		child.children[n]  直接获取child的第n个子元素
+		child.children.length  
+		child.childNodes[n]  获取子节点是应该这样来解决兼容问题
+		if(child.childNodes[i].nodeType==1)  nodeType==3表示为文本节点   nodeType==1表示为元素节点
+		{
+			child.childNodes[i].style.background='red';
+		}
+		child.parentNode  获取父节点
+		child.offsetParent   用来获取一个元素用来定位的父级  
+
+		首位子节点
+		firstElementChild  firstChild  后面的适用于低版本浏览器   前面的适用于高版本浏览器
+		lastElementChild   lastChild
+
+		兄弟节点
+		nextSibling  nextElementSibling
+		previousSibling  previousElementSibling
+
+		odiv.setAttribute(名称,值);//通过这种方式来设置元素的属性
+		getAttribute(名称);//获取元素的属性值
+		removeAttribute(名称);删除元素的属性
+		
+	创建元素，添加元素
+		动态的添加HTML控件
+		<div id="div1">
+			<p id="p1">这是一个段落</p>
+			<p id="p2">这是另一个段落</p>
+		</div>
+
+		<script>
+			var para=document.createElement("p");
+			var node=document.createTextNode("这是新段落。");
+			para.appendChild(node);
+			var element=document.getElementById("div1");
+			element.appendChild(para);
+		</script>
+
+		createElement(标签名)
+		appendChild(节点)   ul.appendChild(li)//如果li有父级则将li先从父级中删掉，然后再添加进ul中，否者直接添加进ul中
+		insertBefore(节点，原有节点)//用insertBefore插入头部时应先判断节点有没有子节点
+		
+		当插入大量的元素时，应采用文档碎片技术
+		var oFragment = document.createDocumentFragment(); 
+		for(var i = 0 ; i < 10; i ++) {
+			var p = document.createElement("p");
+			var oTxt = document.createTextNode("段落" + i);
+			p.appendChild(oTxt);
+			oFragment.appendChild(p);<br>
+		} 
+		document.body.appendChild(oFragment); 
+		先将元素插入到文档碎片中，最后再一次性的将文档碎片变量，插入到需要插入节点的元素下面
+	删除元素
+		removeChild(删除节点)
+		如需删除 HTML 元素，您必须首先获得该元素的父元素：
+		实例
+		var child=document.getElementById("p1");
+		child.parentNode.removeChild(child);
+		
+浏览器窗口设置
+	获取当前浏览器窗口的宽和高
+		var w=window.innerWidth
+		var h=window.innerHeight
+	Windows的一些调用方法
+		window.open() - 打开新窗口
+		window.close() - 关闭当前窗口
+		window.moveTo() - 移动当前窗口
+		window.resizeTo() - 调整当前窗口的尺寸
+	获取整个屏幕的宽和高
+		screen.availWidth - 可用的屏幕宽度
+		screen.availHeight - 可用的屏幕高度
+
+	offsetLeft
+	offsetHeight
+	offsetRight
+	offsetWidth
+
+	
+定时器操作
+	设定
+	var timer = setInterval(function(){},1000);表示从文件加载完毕开始，每过了1秒钟执行一次
+	setTimeout(function(){},1000);//文件加载完毕后，过了1秒钟再执行函数。
+	setTimeout(function(param1,param2){
+		console.log(param1,param2);
+	},interval,param1,param2);
+	清除定时器
+	clearInterval(timer);
+
+HTML DOM 对象
+	方法
+		getElementById(id) - 获取带有指定 id 的节点（元素）
+		appendChild(node) - 插入新的子节点（元素）
+		removeChild(node) - 删除子节点（元素）
+		getElementById() 			返回带有指定 ID 的元素。
+		getElementsByTagName() 		返回包含带有指定标签名称的所有元素的节点列表（集合/节点数组）。
+		getElementsByClassName()  	返回一个数组，IE8及其以下不支持。
+		onav.getAttribute('name');	//获取相应的属性名称
+		appendChild() 				把新的子节点添加到指定节点。
+		removeChild() 				删除子节点。
+		replaceChild() 				替换子节点。
+		insertBefore() 				在指定的子节点前面插入新的子节点。
+		createAttribute() 			创建属性节点。
+		createElement() 			创建元素节点。
+		createTextNode() 			创建文本节点。
+		getAttribute() 				返回指定的属性值。
+		setAttribute() 				把指定属性设置或修改为指定的值。
+	属性：
+		innerHTML - 节点（元素）的文本值
+		parentNode - 节点（元素）的父节点
+		childNodes - 节点（元素）的子节点
+		attributes - 节点（元素）的属性节点
+
+事件绑定
+	attachEvent('click'，函数)//IE
+	obtn.attachEvent('onclick',function(){});
+	可以实现多个函数绑定在同一个事件上
+	addEventListener(事件名，函数，false)//FF，CHROME
+	obtn.addEventListener('click',function(){},false);  事件名称不同
+
+解除绑定
+	detachEvent(事件名，函数)//IE
+	removeEventListener(事件名称，函数,false)
+
+事件捕获//IE
+	obtn.setCapture();//将网页中的所有事件全都集中到obtn上
+	obtn.releaseCapture();//释放捕获
+对象的事件
+	onmousedown
+	onmousemove
+	onmouseup
+	onmouseover
+	onmouseout
+	onclick
+	ondblclick
+	onchange
+
+表格应用
+	<table id="tab1" width="" height="" border="" align="" bordercolor="" background="背景图片路径" bgcolor="">
+		<caption>表格的标题</caption>
+		<thead>表格的表头标记
+			<tr>
+				<td background="背景图片路径">单元格内的文字</td>
+				<td>单元格内的文字</td>
+			</tr>
+		</thead>
+		<tbody>表格的表主体标记
+		<tr height="" align="" valign="">   //valign表示垂直对齐方式
+			<th>单元格内的文字</th>   //表格的表头
+			<th>单元格内的文字</th>
+			<td colspan="水平跨度几格" align="">合并单元格内的文字</td>   单元格水平跨度
+			<td rowspan="竖直跨度几格">合并单元格内的文字</td>   单元格垂直跨度
+		</tr>
+		<tr>
+			<td bgcolor="">单元格内的文字</td>
+			<td bordercolor="">单元格内的文字</td>
+		</tr>
+		<tr>
+			<td background="背景图片路径">单元格内的文字</td>
+			<td>单元格内的文字</td>
+		</tr>
+		</tbody>
+	</table>
+
+	<script>
+	function serch()
+	{
+	  var otab=document.getElementById('tab1');
+	  for(var i=0; i<otab.tBodies[0].rows.length;i++){
+		/*for(var j=0;j<otab.tBodies[0].rows[i].length;j++)
+		{
+			str.search( txt )    -1表示str中没有txt字符串  模糊搜索
+		}*/
+		var stab=otab.tBodies[0].rows[i].cells[1].innerHTML;
+		var otxt=oserch.toLowerCase();
+		
+		var array=stab.toLowerCase().split(' ');
+		for( var j=0;j<array.length;j++)
+		{
+			if(array[j].search(otxt)!=-1)//忽略大小写的查找
+			{
+				otab.tBodies[0].rows[i].style.background='yellow';
+			}
+			else
+			{
+				otab.tBodies[0].rows[i].style.background=' ';
+			}
+		}
+	  }
+	}
+
+表单应用
+	在表单中input标签中name的功能相当于id只是id是用在前台的，name是用在后台的get通过网址传送，不能传送相对比较大的信息，这种方式是有缓存的。主要用于获取数据post不通过网址进行传送，可传送大文件，最大可以传送2G的文件，这种方式没有缓存，主要用于传递数据
+	表单form     action   提交到哪里
+	表单事件   onsubmit 提交时发生     onreset 重置时发生
+	表单内容验证
+	阻止用户非法输入字符  阻止事件
+	输入时，失去焦点时验证  onkeyup,onblur
+	提交时检查    onsubmit
+	后台数据检查 
+
+数组排序
+	var arrDemo = new Array();
+	arrDemo[0] = 10;
+	arrDemo[1] = 50;
+	arrDemo[2] = 51;
+	arrDemo[3] = 100;
+	arrDemo.sort(); //调用sort方法后，数组本身会被改变，即影响原数组
+	alert(arrDemo);//10,100,50,51 默认情况下sort方法是按ascii字母顺序排序的，而非我们认为是按数字大小排序
+	arrDemo.sort(function(a,b){return a>b?1:-1});//从小到大排序
+	arrDemo.sort(function(a,b){return a-b;});//从小到大排序
+	alert(arrDemo);//10,50,51,100
+	arrDemo.sort(function(a,b){return a<b?1:-1});//从大到小排序
+	arrDemo.sort(function(a,b){return b-a;});//从大到小排序
+	alert(arrDemo);//100,51,50,10
+	
+字符串操作
+						php              			js                        
+	去除空格        	trim() ltrim() rtrim()         
+	获取字符串长度		strlen(str)                     	str.length
+	分割                explode('@',$str) join()         	str.split('')
+	合并                implode();                          arr.join('');  //将数组以指定分隔符合并成子串的函数
+	截取                substr($str,start,end可以省略)      str.substring()
+	单词统计            str_world_count()
+	字串查找            strstr($str,'saf')               	str.search()
+	字串位置            strpos($str,'son')              	str.indexOf()
+	字串出现次数        substr_count($str,'son')
+	字符串替换          str_replace('@','(at)',$email)   	str.replace('@','at')
+	字符串翻转          strrev($str)
+	字符串比较          strcmp($str1,$str2)
+	字符串前n位比较		strncmp($str1,$str2,n)
+	substr() strlen()对于英文句式的处理没有任何问题，但我们经常处理的是汉字，所以需要使用iconv_substr()或者mb_substr()
+	
+js正则表达式
+
+	声明正则表达式对象
+		var re=new RegExp('a');  js风格   对大小写敏感
+		var re=/a/和上面的表示的意思相同;  perl风格
+	str.search(re);
+	string.split(分隔符)返回一个数组存储值.
+	var re=new RegExp('a','i');  忽略大小写
+	var re=/a/i    \d 转义表示整数  i表示忽略大小写
+	var re=/a/g    g是global的简称，全部搜索
+	var re=/\d/g     返回一位数
+	var re=/\d\d/g   返回两位数
+	var re=/\d+/g   +表示量词 表示若干位
+	match(re)   
+	应该将正则表达式和字符串操作的相关函数联系起来使用
+
+	str.replace(old,new)   //将str中的第一个old字符替换为new
+	单独使用replace的时候，功能有限，只有将replace与正则配合才能发挥真正的作用
+	str='sdfsdfsdf'
+	re=/d/g;
+	str.replace(re,'0');//将字符串中的所有d字符替换为0字符
+
+	用来过滤敏感词汇
+		var re=/北京|百度|视频/g
+		str.replace(re,'***');  //这样将把字符串中的  北京|百度|视频  字符串全部替换掉
+
+	匹配规则
+	re=/[apx]pc/ 选取前面为a p x 后面为pc的
+	范围
+	[a-z]  [0-9]
+	排除
+	[^a] [^a-z]  排除的意思  [^a-z0-9]
+	^出现在[]内表示排除的意思
+	不出现在[]时 ^表示行首
+	$表示行尾
+	.代表任意字符    正则贪婪原则，搜索最大的合适字符
+	\.表示.本身
+	转义字符
+	\b是正则表达式规定的一个特殊代码（好吧，某些人叫它元字符，metacharacter），
+	代表着单词的开头或结尾，也就是单词的分界处。虽然通常英文的单词是由空格，
+	标点符号或者换行来分隔的，但是\b并不匹配这些单词分隔字符中的任何一个，它只匹配一个位置。
+	\d   [0-9]
+	\w   英文，数字，下划线   [a-z0-9_]
+	\s   空白字符
+	\D   [^0-9]
+	\W
+	\S
+	.	匹配除换行符以外的任意字符
+	\b	匹配单词的开始或结束
+	^	匹配字符串的开始
+	$	匹配字符串的结束
+	量词
+
+	+   等价于 {1,}
+	?   等价于{0,1}  表示可有可无，默认正则匹配是贪婪的，加上？将是最小匹配原则
+	{n,} 最少n位
+	{n,m} 最少n位   最多m位
+	\d{n}  正好出现n次
+
+	电话号码的规则[1-9]\d{7}
+	qq号的规则[1-9]\d{4,10}
+	固定电话(0\d{2,3}-)?[1-9]\d{7}(-\d{1,5})?
+
+	邮箱校验
+	一串英文，数字，下划线    @           一串英文，数字     .   一串英文
+			\w+               @             [a-z0-9]+        \.   [a-z]+
+		/\w+@[a-z0-9]+\.[a-z]+/i
+	re.test(str)  test函数认为字符串有一部分中符合要求就返回true 因此
+	  ---丁32133@qq.com的邮箱将会返回正确
+	判断str字符串是否符合re规则   符合返回true  或者返回false
+	/^\w+@[a-z0-9]+\.[a-z]+$/i    表示在行首与行尾之间都要校验，而不是只是校验其中的一部分
+	
+判断浏览器是否支持websocket技术  if(window.WebSocket){alert(1);}else{alert(2);}
+<input type="text" name="name" disabled="disabled" value="ding" /><input type="text" name="age" readonly="readonly" value="23" />disabled的input在提交的时候不会提交过去。readonly的会提交过去
+details是json数据  details.template_numconsole.log(details['type'+1]) ?可以这样访问details.type1
+$("input:checked[name='is_spike']")
+textarea获取里面的值? ? $("textarea[name='content']").val();
+Math.min.apply(null,Arr);  获取数组中的最小值
+parseInt Number parseFloat Math.floor Math.ceil
+
+防网站被嵌套
+	<script type="text/javascript">
+		if(window!=top)top.location.href?=window.location.href;?//如果不是，将top对象的网址自动导向被嵌入网页的网址
+	</script>
+
+jquery中的函数中涉及到的this和原生的this是一致的
+
+
+ajax跨域请求jsonp
+	原生js实现
+		function test(data){
+			console.log(data);
+		}
+		$(function(){
+			$("a").click(function(){
+				var url = "jsonp.php?value=123&callback=test";
+				var script = document.createElement('script');	 ? 
+				script.setAttribute('src', url);	 ? ?
+				document.getElementsByTagName('head')[0].appendChild(script);	
+			})
+		});
+
+	ajax实现jsonp访问
+		$.ajax({
+			type:'get',
+			async:false,
+			url:"jsonp.php?value=2334",
+			dataType:"jsonp",
+			jsonp:"callback",
+			success:function(data)
+			{
+				console.log("his->"+data);
+			}
+		});
+	后端实现
+		<?php
+			$value = $_GET['value'];
+			$callback = $_GET['callback'];
+			$data = array('name'=>'ding');
+			$json = json_encode($data);
+			$content = "{$callback}({$json});";
+			echo $content;
+			//返回数据不需要再添加script标签了
+		?>
+		
+图片预览上传
+	<html>
+		<head>
+			<title>js图片上传预览</title>
+			<script>
+				function PreviewImage(imgFile)
+				{
+					var filextension=imgFile.value.substring(imgFile.value.lastIndexOf("."),imgFile.value.length);
+					filextension=filextension.toLowerCase();
+					if ((filextension!='.jpg')&&(filextension!='.gif')&&(filextension!='.jpeg')&&(filextension!='.png')&&(filextension!='.bmp'))
+					{
+						alert("对不起，系统仅支持标准格式的照片，请您调整格式后重新上传，谢谢 !");
+						imgFile.focus();
+					}
+					else
+					{
+						var path;
+						if(document.all)//IE
+						{
+							imgFile.select();//要解决ie9 和 frame框架下的bug问题，需要找一个元素focus();
+							path = document.selection.createRange().text;
+							document.getElementById("imgPreview").innerHTML="";
+							document.getElementById("imgPreview").style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true',sizingMethod='scale',src=\"" + path + "\")";//使用滤镜效果      
+						}
+						else//FF
+						{
+							path=window.URL.createObjectURL(imgFile.files[0]);// FF 7.0以上
+							document.getElementById("imgPreview").innerHTML = "<img id='img1' width='120px' height='100px' src='"+path+"'/>";
+						}
+					}
+				}
+			</script>
+		</head>
+		<body>
+			<input type="file" onchange='PreviewImage(this)' />
+			<div id="imgPreview" style='width:120px; height:100px;'></div>
+		</body>
+	</html>
+
+弹出页面
+    window.open('test1.html', 'newwindow', 'height=400, width=400, top=0, left=0, toolbar=no, menubar=no, scrollbars=no,resizable=no, location=center, status=no');
+
+验证密码强度
+	$("#password2").keyup(function () {
+	　　if ($(this).val() != "") {
+	　　　　var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+	　　　　var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+	　　　　var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+	　　　　if (false == enoughRegex.test($(this).val())) {
+	　　　　　　//密码小于六位的时候，密码强度图片都为灰色
+	　　　　　　$("#change_pass_strong").css("width", "0%");
+	　　　　}
+	　　　　else if (strongRegex.test($(this).val())) {
+	　　　　　　//强,密码为八位及以上并且字母数字特殊字符三项都包括
+	　　　　　　$("#change_pass_strong").css("width", "100%");
+	　　　　}
+	　　　　else if (mediumRegex.test($(this).val())) {
+	　　　　　　//中等,密码为七位及以上并且字母、数字、特殊字符三项中有两项，强度是中等
+	　　　　　　$("#change_pass_strong").css("width", "50%");
+	　　　　}
+	　　　　else {
+	　　　　　　//弱,如果密码为6为及以下，就算字母、数字、特殊字符三项都包括，强度也是弱的
+	　　　　　　$("#change_pass_strong").css("width", "20%");
+	　　　　}    
+	　　}
+	});
+
+汉字转化拼音
+	引用ChinesePY.js
+	在js中使用
+	var origin = "丁要里";
+	var converted = Pinyin.GetQP(origin);
+	console.log(converted);
+	这样就可以获取到汉字的全拼了。
+	
+获取选中的文字
+	function getSelection(){
+		var txt="";
+		if(document.selection){
+			txt = document.selection.createRange().text;
+		}else{
+			txt = document.getSelection();
+		}
+		return txt.toString();
+	}
+
+	setInterval(function(){
+		var temp = getSelection();
+		if(temp.length>0){
+			console.log(temp);
+		}
+	},1000);
+	
+进制转换
+	10进制转换成其它进制
+	例如var m = 10;
+	document.write(m.toString(2) + "<br>"); // 显示为 1010   
+	document.write(m.toString(8) + "<br>"); // 显示为 12   
+	document.write(m.toString(10) + "<br>"); // 显示为 10   
+	document.write(m.toString(16) + "<br>"); // 显示为 a
+	其它进制转换成10进制
+	document.write(parseInt(12) + "<br>");       //12
+	document.write(parseInt(1011, 2) + "<br>");  //11
+	document.write(parseInt(12, 8) + "<br>");    //10
+	document.write(parseInt(10, 10) + "<br>");   //10
+	document.write(parseInt("a", 16) + "<br>");  //10
+	document.write(parseInt("A", 16) + "<br>");  //10
+	document.write(parseInt("E", 16) + "<br>");  //14
+	
+页面关闭响应事件
+	只有当返回值的时候，会有一个提示！
+	window.onbeforeunload = function(){
+		return "数据还没有保存?";
+	}
+
+js返回，前进，刷新等方法
+	<input type=button value=刷新 onclick="window.location.reload()">
+	<input type=button value=前进 onclick="window.history.forward()">
+	<input type=button value=后退 onclick="window.history.back()"> 
+	js跳转页面
+	window.location="http://www.baidu.com";
+	
+js共有5种基本数据类型：Undefine、NULL、Boolean、Number、String。
+
+
+
+获取浏览器的平台，类型，以及系统语言（只支持IE）
+	<script>
+		$(function(){
+			function get_os() {  
+				  var sUserAgent =navigator.userAgent;  
+				  var isWin = (navigator.platform =="Win32") || (navigator.platform == "Windows");  
+				  var isMac = (navigator.platform =="Mac68K") || (navigator.platform == "MacPPC") ||(navigator.platform == "Macintosh") || (navigator.platform =="MacIntel");
+				  if (isMac) return "Mac";  
+				  var isUnix = (navigator.platform =="X11") && !isWin && !isMac;  
+				  if (isUnix) return "Unix";  
+				  var isLinux =(String(navigator.platform).indexOf("Linux") > -1);  
+				  if (isLinux) return "Linux";  
+				  if (isWin) {  
+						var isWin2K =sUserAgent.indexOf("Windows NT 5.0") > -1 ||sUserAgent.indexOf("Windows 2000") > -1;  
+						if (isWin2K) return "Win2000";  
+						var isWinXP =sUserAgent.indexOf("Windows NT 5.1") > -1 ||sUserAgent.indexOf("Windows XP") > -1;  
+						if (isWinXP) return "WinXP";  
+						var isWin2003 =sUserAgent.indexOf("Windows NT 5.2") > -1 ||sUserAgent.indexOf("Windows 2003") > -1;  
+						if (isWin2003) return "Win2003";
+						var isWinVista=sUserAgent.indexOf("Windows NT 6.0") > -1 ||sUserAgent.indexOf("Windows Vista") > -1;  
+						if (isWinVista) return "WinVista";
+						var isWin7 =sUserAgent.indexOf("Windows NT 6.1") > -1 || sUserAgent.indexOf("Windows7") > -1;  
+						if (isWin7) return "Win7";
+				  }  
+				  return "other";  
+			}  
+			 
+			document.writeln("您的操作系统是：" + get_os());
+			//得到浏览器 包括：windows(IE6、IE7、IE8、淘宝浏览器、QQ浏览器、firefox、chrome、opera、safari)
+			function get_browser()  
+			{  
+					var Sys = {};
+					var ua =navigator.userAgent.toLowerCase();
+					var s;
+					(s = ua.match(/qqbrowser\/([\d.]+)/)) ?Sys.qq = s[1] :
+					(s = ua.match(/msie ([\d.]+)/)) ? Sys.ie= s[1] :
+					(s = ua.match(/firefox\/([\d.]+)/)) ?Sys.firefox = s[1] :
+					(s = ua.match(/taobrowser\/([\d.]+)/)) ?Sys.tao = s[1] :
+					(s = ua.match(/chrome\/([\d.]+)/)) ?Sys.chrome = s[1] :
+					(s = ua.match(/opera.([\d.]+)/)) ?Sys.opera = s[1] :
+					(s =ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;
+					//以下进行测试
+					if (Sys.ie) {
+						return 'IE' + Sys.ie;
+					}
+					if (Sys.firefox){
+						return 'Firefox';
+					}
+					if (Sys.qq){
+						return 'QQ';
+					}
+					if (Sys.tao){
+						return 'Tao';
+					}
+					if (Sys.chrome){
+						return 'Chrome';
+					}
+					if (Sys.opera){
+						return 'Opera';
+					}
+					if (Sys.safari){
+						return 'Safari';
+				}
+			}  
+			document.writeln("您的浏览器是：" + get_browser());
+			document.writeln("<br/>"+navigator.appName);
+			document.writeln("<br/>"+navigator.appCodeName);
+			document.writeln("<br/>"+navigator.appMinorVersion);
+			document.writeln("<br/>"+navigator.appVersion);
+			document.writeln("<br/>"+navigator.browserLanguage);
+			document.writeln("<br/>"+navigator.cookieEnabled);
+			document.writeln("<br/>"+navigator.cpuClass);
+			document.writeln("<br/>"+navigator.onLine);
+			document.writeln("<br/>"+navigator.platform);
+			document.writeln("<br/>"+navigator.systemLanguage);
+			document.writeln("<br/>"+navigator.userAgent);
+			document.writeln("<br/>"+navigator.userLanguage);
+		})
+	</script>  
+
+	var browser = { //判断手机的平台
+		versions: function () {
+			var u = navigator.userAgent, app = navigator.appVersion;
+			return { //移动终端浏览器版本信息 
+				ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端 
+				android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器 
+				iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器 
+				iPad: u.indexOf('iPad') > -1, //是否iPad 
+			};
+		}()
+	 }
+	if (browser.versions.iPhone || browser.versions.iPad || browser.versions.ios) {
+		testInterval = 0;
+	}
+	
+地址（引用）传递，按值传递
+	很多人，包括我，受书本知识消化不彻底的影响，认为 JS 中参数有两种传递方式：数字、字符串等按值传递；数组、对象等按地址（引用）传递。对此种观点，我们要谨慎。
+	var v1 = []
+	var v2 = {};
+	var v3 = {};
+	function foo(v1, v2, v3)
+	{
+		v1 = [1];
+		v2 = [2];
+		v3 = {a:3}
+	}
+
+	foo(v1, v2, v3);
+	alert (v1); // 空白 
+	alert (v2); // [object Object] 
+	alert (v3.a); // undefined
+	由此可见：v1、v2、v3 都没有被改变，v1 仍然是零个元素的数组，v2、v3 仍然是空白的对象。
+	但是，数组、对象等按值传递，是指变量地址的值。
+	数组、对象等的按值传递与数字、字符串还是有所不同的。数字、字符串是把值直接复制进去了，而数组、对象是把变量地址复制进去的。
+	前面我们让 v1、v2、v3 作为参数进入函数后，就有了地址副本，这些地址副本的指向和外面的 v1、v2、v3 的地址指向是相同的。但我们为 v1、v2、v3 赋了值，也就是说我们把地址副本的指向改变了，指向了新的数组和对象。这样内部的 v1、v2、v3 和外部的 v1、v2、v3 就完全断了。
+	如果我们不赋新值，而是直接操作它，那么，它操作到的，仍然是和外面的 v1、v2、v3 指向的同一块数组或对象。
+	var v1 = []
+	var v2 = {};
+	var v3 = {a:0};
+	function foo(v1, v2, v3)
+	{
+		v1.push (1);
+		v2.a = 2;
+		v3.a = 3;
+	}
+	foo(v1, v2, v3);
+	alert (v1); // 1 
+	alert (v2.a); // 2 
+	alert (v3.a); // 3
+
+语言特性
+	alert(a); 使用未声明的变量报错
+	alert(window.a); 使用未声明的属性undefined
+	定义
+	function ajax(url,success,fail)
+	{
+		success(data);
+	}
+	调用
+	ajax('url',function(data){console.log(data)},function(data){}}
+
+	定义
+	$.ajax(config)
+	{
+		config.success(data);
+	}
+	调用
+	$.ajax({url:'',success:function(){}});
+
+按键延迟	
+	<!doctype html>  
+	<html lang="en">  
+		<head>  
+			<meta charset="UTF-8">  
+			<title>解决onkeydown卡顿问题</title>  
+			<style>  
+			 #div1{  
+				height: 100px;  
+				width: 100px;  
+				background-color: red;  
+				position: absolute;  
+				left: 0;  
+				top: 0;  
+			 }  
+			</style>  
+			<script type="text/javascript">  
+			  window.onload=function(){  
+				var oDiv=document.getElementById("div1");  
+				var direction={left:false,top:false,right:false,bottom:false};//左上右下   
+				var timer=null;  
+		  
+				setInterval(function(){  
+					if(direction.left){  
+						oDiv.style.left=oDiv.offsetLeft-10+'px';  
+					}  
+					else if(direction.top){  
+							oDiv.style.top=oDiv.offsetTop-10+'px';  
+					}  
+					else if(direction.right){  
+							oDiv.style.left=oDiv.offsetLeft+10+'px';  
+					}  
+					else if(direction.bottom){  
+							oDiv.style.top=oDiv.offsetTop+10+'px';  
+					}  
+				},50);  
+		  
+				document.onkeydown=function(ev){  
+					var e=ev || event;  
+		  
+					switch(e.keyCode){  
+						case 37:  
+						 direction.left=true;  
+						break;  
+						case 38:  
+						 direction.top=true;  
+						break;  
+						case 39:  
+						 direction.right=true;  
+						break;  
+						case 40:  
+						 direction.bottom=true;  
+						break;  
+					}  
+					 
+				}  
+				document.onkeyup=function(){  
+					direction={left:false,top:false,right:false,bottom:false};  
+				}  
+			  }  
+			</script>  
+		</head>  
+		<body>  
+			<div id="div1"></div>  
+		</body>  
+	</html>  	
+
+apply()和call()

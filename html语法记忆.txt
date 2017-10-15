@@ -1,0 +1,147 @@
+在每个html标签中，还可以设置一些属性，控制html标签所建立的元素，这些属性将位于所建立元素的首标签中
+<!--注释--><html>和</html>中<html>是首标签
+
+<meta>元信息标记，用于seo
+	<meta name="robots" content="搜索方式">
+	搜索方式
+	all   表示能搜索当前网页及其链接的网页
+	index  表示能搜索当前的网页
+	nofollow  表示不能搜索当前网页链接的网页
+	noindex  表示不能搜索当前的网页
+	none  表示不能搜索当前网页及其链接的网页
+	<meta name="keyname" content="具体的关键字,多关键字用逗号分开,不建议有太多"> 设置网页的关键字属性
+	<meta name="description" content="对页面的描述语言">
+	<meta name="generator" content="notepad++">  设置编辑工具
+	<meta name="author" content="作者名称">
+	<meta name="robots" content="搜索方式">
+	<meta http-equiv="refresh" conten="1;url=http://www.baidu.com">
+	<meta http-equiv="Content-Language" content="语言">
+	http-equiv 是用于传送http协议的标头，在content中才设置具体的属性值
+	<meta http-equiv="refresh" content="跳转时间（单位为秒）"；url="链接地址">    设置网页的定时跳转
+	<meta http-equiv="cache-control" content="no-cache">	//禁止从缓存中调用
+	<meta http-equiv="set-cookie" content="到期时间">	//删除过期的cookie
+	<meta http-equiv="Windows-target" content="_top">
+	Windows-target表示新网页的打开方式   _top表示打开一个独立的页面
+	
+a标签
+	<a href="http://www.baidu.com" target="_blank">进入网页</a>在新窗口中打开
+	href="ftp://IP地址"    href="talnet://"   href="mailto:电子邮件地址"  href="文件地址"
+	<a>标签可定义锚。锚 (anchor) 有两种用法：
+	通过使用 href 属性，创建指向另外一个文档的链接（或超链接）
+	通过使用 name 或 id 属性，创建一个文档内部的书签（也就是说，可以创建指向文档片段的链接）
+	<a name="书签名称">锚点文字</a>   定义锚点
+	<a href="#书签名称">连接的文字</a>连接到本网页的书签
+	<a href="网页路径#书签名称">连接的文字</a>连接到外网页的书签
+	
+常见标签
+	<em> <i> <cite> 斜体字
+	<strike>  <s>  设置删除线
+	<u>  带下划线的文字
+	<blockquote>  向右缩进标记
+	<code>  <samp>  等宽文字标记
+	&nbsp;表示空格符号
+	<pre> 保留原始排版模式标记
+	<br/>软换行
+	<hr width="80%" size="3" color=""/>  添加水平线 同时可以设置水平线的高度和宽度,以及水平线的颜色
+	<hr noshade="noshade"/>
+	<plaintext>  <xmp> 忽视HTML标记，即让HTML标记失去作用，一般放置BODY标记之后，是HTML语句直接显示出来
+	<html>文件开始
+	<head>文件头   头文件中定义的内容都不会显示；
+	<title>文件标题
+	<body>文件正文
+	<h2>加粗
+	
+body元素的属性
+	<center>居中   align="center"(推荐使用)或align=center
+	text="颜色代码"   添加进body中表示文本将以蓝色显示
+	bgcolor   设置页面的背景颜色
+	background  设置页面的背景图片
+	bgproperties   设定页面的背景图片固定，不随页面的滚动而移动
+	link   设定页面默认的连接颜色
+	alink  设定鼠标正在单击的连接颜色
+	vlink  设定访问过后的链接颜色
+	topmargin   设定页面的上边距
+	leftmargin  设定页面的左边距
+	margin设置边距  topmargin上边距   leftmargin左边距
+	
+标题文字标记
+	<h1>~<h6>//<h6>是最小的字号
+	<font size="文字大小" face="文字字体" color="颜色代码">想要设置的文字</font>
+	<font face="文字字体">想要设置的文字</font>
+	<p class="nav" id="navd" style="font-family: arial; size: 12px;"></p>
+	
+文字标注
+	<ruby>
+		被说明的文字
+			<rt>
+				说明文字
+			</rt>
+	</ruby>
+	<var>x</var> 变量标记
+
+list列表
+	无序列表
+		<ul type="">    type in (disc,circle,square)
+		   <li>列表项名称</li>
+		</ul>
+		
+	有序列表
+		<ol type="" start="">  type in (1,a,A,i,I)   start表示有序列表的起始值
+		   <li>列表项名称</li>
+		</ol>
+
+	定义列表
+		<dl>
+			<dt>名词一</dt><dd>解释一</dd>
+		</dl>
+
+table应用
+	<table>	定义表格
+	<caption>	定义表格标题。
+	<th>	定义表格的表头。
+	<tr>	定义表格的行。
+	<td>	定义表格单元。
+	<thead>	定义表格的页眉。
+	<tbody>	定义表格的主体。
+	<tfoot>	定义表格的页脚。
+	<col>	定义用于表格列的属性。
+	<colgroup>	定义表格列的组。
+	<table width="" height="" border="" align="" bordercolor="" background="背景图片路径" bgcolor="">
+		<caption>表格的标题</caption>
+		<thead>表格的表头标记
+			<tr>
+				<td background="背景图片路径">单元格内的文字</td>
+				<td>单元格内的文字</td>
+			</tr>
+		</thead>
+		<tbody>表格的表主体标记
+		<tr height="" align="" valign="">   //valign表示垂直对齐方式
+			<th>单元格内的文字</th>   //表格的表头
+			<th>单元格内的文字</th>
+			<td colspan="水平跨度几格" align="">合并单元格内的文字</td>   单元格水平跨度
+			<td rowspan="竖直跨度几格">合并单元格内的文字</td>   单元格垂直跨度
+		</tr>
+		<tr>
+			<td bgcolor="">单元格内的文字</td>
+			<td bordercolor="">单元格内的文字</td>
+		</tr>
+		<tr>
+			<td background="背景图片路径">单元格内的文字</td>
+			<td>单元格内的文字</td>
+		</tr>
+		</tbody>
+		<tfoot>  表格的表尾标记
+		<tr>
+			<td background="背景图片路径">单元格内的文字</td>
+			<td>单元格内的文字</td>
+		</tr>
+		</tfoot>
+	</table>
+
+form表单
+	<form action=""  method="传送方法" name="表单名称" enctype="编码方式" target="目标的显示方式">
+	</form>
+	<select>
+		 name="music" size="5" multiple="multiple"
+		 <option value="rock" selected="selected">摇滚乐</option> 
+	</select>

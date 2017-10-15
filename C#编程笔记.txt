@@ -1,0 +1,612 @@
+控件
+Picturebox.invalidate();方法将按照控件的基本属性，重新绘制；
+
+
+richtextbox控件常用方法
+（2）Find方法：用来从RichTextBox控件中查找指定的字符串。经常使用的调用格式如下：??[格式1]：??
+RichTextBox对象.Find(str)??
+[功能]：在指定的“RichTextBox”控件中查找文本，并返回搜索文本的第一个字符在控件内的位置。如果未找到搜索字符串或者str参数指定的搜索字符串为空，则返回值为1。??[格式2]：??
+RichTextBox对象.Find(str,RichTextBoxFinds)??
+[功能]：在“RichTextBox?对象”指定的文本框中搜索?str?参数中指定的文本，并返回文本的第一个字符在控件内的位置。如果返回负值，则未找到所搜索的文本字符串。还可以使用此方法搜索特定格式的文本。参数RichTextBoxFinds指定如何在控件中执行文本搜索，其取值及其含义如表9-4?所示。???[格式3]：??
+RichTextBox对象.Find(str,start,RichTextBoxFinds)??
+[功能]：这里Find方法与前面的格式2?基本类似，不同的只是通过设置控件文本内的搜索起始位置来缩小文本搜索范围，start参数表示开始搜索的位置。此功能使用户得以避开可能已搜索过的文本或已经知道不包含要搜索的特定文本的文本。如果在options参数中指定了RichTextBoxFinds.Reverse值，则?start参数的值将指示反向搜索结束的位置，因为搜索是从文档底部开始的。??
+（3）SaveFile方法：用来把RichTextBox中的信息保存到指定的文件中，调用格式有以下三种。??[格式1]：?RichTextBox对象名.SaveFile(文件名);??
+[功能]：将?RichTextBox控件中的内容保存为RTF格式文件中。??
+[格式2]：?RichTextBox对象名.SaveFile(文件名,文件类型);??
+[功能]：将?RichTextBox控件中的内容保存为“文件类型”指定的格式文件中。
+[格式3]：?RichTextBox对象名.SaveFile(数据流,数据流类型);??
+[功能]：将?RichTextBox控件中的内容保存为“数据流类型”指定的数据流类型文件中。??其中，文件类型或数据流类型的取值及含义如表9-5所示。??
+（4）LoadFile方法：使用LoadFile方法可以将文本文件、RTF文件装入RichTextBox控件。主要的调用格式有以下三种。??
+[格式1]：?RichTextBox对象名.LoadFile(文件名);?-?8?–??
+[功能]：将RTF格式文件或标准ASCII文本文件加载到RichTextBox控件中。??[格式2]：?RichTextBox对象名.LoadFile(数据流,数据流类型);??[功能]：将现有数据流的内容加载到RichTextBox控件中。??[格式3]：?RichTextBox对象名.LoadFile(文件名,文件类型);??[功能]：将特定类型的文件加载到RichTextBox控件中。
+button控件常用方法
+）DialogResult属性：当使用ShowDialog方法显示窗体时，可以使用该属性设置当用户按了该按钮后，?ShowDialog方法的返回值。值有：OK、Cancel、Abort、Retry、Ignore、Yes、No等。
+
+
+c#开发-基础知识及有用技巧(一）
+1、时间长度的计算 TimeSpan类。
+     例如：TimeSpan span = dateTime1 - dateTime2     方便啊
+2、从类（Class)返回一个System.Type类型，用typeof关键字
+3、从一个对象实例(Object)返回一个System.Type类型，用GetType方法
+4、判断是否处于设计状态：DesignMode属性
+5、根据GUID创建对象实例
+System.Guid pGuid = new Guid(guid);
+System.Type ObjectCustorm = Type.GetTypeFromCLSID(pGuid);
+Object obj = Activator.CreateInstance(ObjectCustorm);
+6、GDI+不支持xor绘制模式的近似解决方法：
+ControlPaint.DrawReversibleFrame、ControlPaint.DrawReversibleLine方法
+7、获取Enum类型中的所有枚举值：
+　　Enum.GetNames方法
+　将字符串转换成枚举值
+　　Enum.Parse方法
+8、Label放在图片上时，使Label透明
+picLogo.Controls.Add(lblStatus);
+lblStatus.BackColor = Color.Transparent;
+9、调用帮助文件
+打开帮助文件
+Help.ShowHelp(this,@"c:/windows/help/mspaint.chm");
+
+打开帮助文件，并跳转到指定的主题
+Help.ShowHelp(this,@"c:/windows/help/mspaint.chm","paint_lines.htm");
+
+打开帮助文件，并转到“索引”选项卡
+Help.ShowHelpIndex(this,@"c:/windows/help/mspaint.chm","paint_lines.htm");
+
+在屏幕上显示一条浮动的帮助信息
+Help.ShowPopup(this,"这里是帮助信息",new Point(100,100));
+10、通过AppDomain在应用程序之间传递数据
+例如，两个系统可能会共用登录信息，登录一个系统后，再启动另一个系统时，不需要重新登录。
+先定义一个在应用程序之间传递的数据的类，该类必须从MarshalByRefObject继承:
+/**//// <summary>
+/// 用于在不同的appdomain之间传递参数
+/// </summary>
+public class AppDomainInfo:MarshalByRefObject
+{
+    public int UserID;
+}
+然后可以这样打开新的应用程序
+          AppDomainSetup setup = new AppDomainSetup();
+                      setup.ApplicationName = "测试程序";                    
+                      AppDomain appDomain = AppDomain.CreateDomain("TestDomain", null, setup);
+
+                      AppDomainInfo domainInfo = new    AppDomainInfo();
+                      domainInfo.UserID = Winsharp.BaseClass.AppConfigInfo.UserID;
+                      appDomain.SetData("domainInfo",domainInfo);
+
+                    object obj = appDomain.CreateInstanceFromAndUnwrap(str,"TestDomain.Test");
+                      (obj as Form).Show();
+11、换行字符串，相当于"\r\n"，Environment.NewLine
+         API中有GetTickCount函数，C#中为Environment.TickCount
+12、取得安装操作系统输入的用户姓名和公司名称：
+               Microsoft.Win32.RegistryKey     cmicRegKey=Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software");   
+                     cmicRegKey=cmicRegKey.OpenSubKey("Microsoft");   
+                  cmicRegKey=cmicRegKey.OpenSubKey("MS Setup (ACME)");   
+                  cmicRegKey=cmicRegKey.OpenSubKey("User Info");   
+                object cmicCompany = cmicRegKey.GetValue("DefCompany");     
+                object cmicUser = cmicRegKey.GetValue("DefName");   
+13、C# WinForm 捕获最小化事件（来自Limon Tea的随笔http://limon7.cnblogs.com/archive/2006/07/23/457865.html）
+虽然Form类没有提供Minimize的事件，但还是可以通过重载Deactive来实现
+当Form失去焦点后，测试WindowState取得Form状态，若为Minimized既是最小化事件。
+本例为最小化后隐藏窗口：
+还有种方法更加直接，重载WndProc：
+
+const int WM_SYSCOMMAND = 0x112;
+const int SC_CLOSE = 0xF060;
+const int SC_MINIMIZE = 0xF020;
+const int SC_MAXIMIZE = 0xF030;
+protected override void WndProc(ref Message m)
+{
+    if (m.Msg == WM_SYSCOMMAND)
+    {
+        if (m.WParam.ToInt32() == SC_MINIMIZE)
+        {
+            this.Visible = false;
+            return;
+          }
+      }
+    base.WndProc(ref m);
+}
+private void Form1_Deactivate(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+                this.Visible = false;
+          }
+14、FromBase64String的问题
+     在使用Convert.ToBase64String()对字符串进行Base64编码时，注意的几点：
+       例：string s = "Hello";
+           byte[] bytes = Convert.FromBase64String(s);
+    以上代码在运行时会抛出FormatException异常.提示为：Base-64字符数组的无效长度
+原因：当Convert.FromBase64String方法的参数s的长度小于 4 或不是 4 的偶数倍时，将会抛出FormatException。
+   
+       例: 
+           Convert.FromBase64String("Hell");        // Normal.
+           Convert.FromBase64String("Hell ");       // Normal.（忽略空格）
+           Convert.FromBase64String("Hello!");      // throw FormatException.
+           Convert.FromBase64String("Hello Net"); // Normal.（忽略空格）
+
+15、避免程序重复运行。（即只允许运行一个实例）
+System.Threading.Mutex appSingleton = new System.Threading.Mutex(false, "MyProgInstance_PPP"); 
+    if(appSingleton.WaitOne(0, false)) 
+      {
+        Application.Run(new FormMain(););
+      }
+   else
+     {
+        MessageBox.Show("程序已经运行");
+     }
+16、VB中的chr和asc函数在C#中没有，C#中只要用Convert类中的函数进行转换就可以了，如：
+       int n = Convert.ToInt32('a');
+       char c = Convert.ToChar(99);
+       另外，空的char值的获得：Convert.ToChar(0) 例如，在设置了一个textBox的PasswordChar属性后，要清除它，就只能这样了：textBox1.PasswordChar = Convert.ToChar(0) ;
+
+17、C#的String.Format举例（http://blog.sina.com.cn/u/4a99b1ba010005ax）
+string str1 = String.Format("{0:N1}",56789);               //result: 56,789.0
+string str2 = String.Format("{0:N2}",56789);               //result: 56,789.00
+string str3 = String.Format("{0:N3}",56789);               //result: 56,789.000
+string str8 = String.Format("{0:F1}",56789);                 //result: 56789.0
+string str9 = String.Format("{0:F2}",56789);                 //result: 56789.00
+string str11 =(56789 / 100.0).ToString("#.##");             //result: 567.89
+string str12 =(56789 / 100).ToString("#.##");                //result: 567
+字符 说明 示例 输出
+C 或 c
+货币
+Console.Write("{0:C}", 2.5);
+Console.Write("{0:C}", -2.5);
+$2.50
+($2.50)
+D 或 d
+十进制数
+Console.Write("{0:D5}", 25);
+00025
+E 或 e
+科学型
+Console.Write("{0:E}", 250000);
+2.500000E+005
+F 或 f
+固定点
+Console.Write("{0:F2}", 25);
+Console.Write("{0:F0}", 25);
+25.00
+25
+G 或 g
+常规
+Console.Write("{0:G}", 2.5);
+2.5
+N 或 n
+数字
+Console.Write("{0:N}", 2500000);
+2,500,000.00
+X 或 x
+十六进制
+Console.Write("{0:X}", 250);
+Console.Write("{0:X}", 0xffff);
+FA
+FFFF
+C#的String.Format举例
+string str1 = String.Format("{0:N1}",56789);               //result: 56,789.0
+string str2 = String.Format("{0:N2}",56789);               //result: 56,789.00
+string str3 = String.Format("{0:N3}",56789);               //result: 56,789.000
+string str8 = String.Format("{0:F1}",56789);                 //result: 56789.0
+string str9 = String.Format("{0:F2}",56789);                 //result: 56789.00
+string str11 =(56789 / 100.0).ToString("#.##");             //result: 567.89
+string str12 =(56789 / 100).ToString("#.##");                //result: 567
+字符 说明 示例 输出
+C 或 c
+货币
+Console.Write("{0:C}", 2.5);
+Console.Write("{0:C}", -2.5);
+$2.50
+($2.50)
+D 或 d
+十进制数
+Console.Write("{0:D5}", 25);
+00025
+E 或 e
+科学型
+Console.Write("{0:E}", 250000);
+2.500000E+005
+F 或 f
+固定点
+Console.Write("{0:F2}", 25);
+Console.Write("{0:F0}", 25);
+25.00
+25
+G 或 g
+常规
+Console.Write("{0:G}", 2.5);
+2.5
+N 或 n
+数字
+Console.Write("{0:N}", 2500000);
+2,500,000.00
+X 或 x
+十六进制
+Console.Write("{0:X}", 250);
+Console.Write("{0:X}", 0xffff);
+FA
+FFFF
+
+
+c#?var?类型说明?
+    VAR?是3.5新出的一个定义变量的类型其实也就是弱化类型的定义VAR可代替任何类型
+编译器会根据上
+下文来判断你到底是想用什么类型的
+至于什么情况下用到VAR##?我想就是你无法确定自己将用的是什么类型就可以使用
+VAR####?类似?OBJECT但是效率比OBJECT高点
+使用var定义变量时有以下四个特点：
+1.?必须在定义时初始化。也就是必
+须是var?s?=?“abcd”形式，而不能是如下形式：var?s;
+s?=?“abcd”;
+2.?一但初始化完成，就不能再给变量赋与初始化值
+类型不同的值了。3.##?var要求是局部变量。
+4.##?使用var定义变量和object不同，它在效率上和使用强类型方式定义变
+量完全一样。
+
+
+
+为其添加截图功能，同时将图形处理功能直接放在首窗体上，在首窗体上添加还原按钮，
+直接打开的是图片文件，同时将与此文件在同一文件夹的图片文件都添加到左边的列表清单中
+
+
+
+           先试一下:groupBox1背景色，这里设为Gray(注窗体中惟一的背景色)。
+然后在触发的事件或"Form1_Load"事件中
+this.groupBox1.BackColor = Color.Gray;
+this.TransparencyKey = Color.Gray; 
+
+            用来确定边界
+            int p, q;
+            int minRow = (i == 1) ? 1 : i - 1;
+            int maxRow = (i == row) ? row : i + 1;
+            int minCol = (j == 1) ? 1 : j - 1;
+            int maxCol = (j == line) ? line : j + 1;
+
+          Random rd = new Random();double w = rd.next(0.0,1.0);
+         （函数可以重载，next(0.0,1.0)就是产生[0.0,1.0)之间的小数）
+          screen.primaryscreen,workingarea.width获取桌面的宽度；
+控件
+imagelist
+       random sr=new random（）；int i=random.next(imagelist.image.count);
+       this.backgroundimage=imagelist.image[i];
+
+
+      if (oldFont.Bold)
+        newFont = new Font(oldFont, oldFont.Style & ~FontStyle.Bold);
+      else
+        newFont = new Font(oldFont, oldFont.Style | FontStyle.Bold);
+Fontstyle.Bold是16进制，因为本身old的字体可能有很多样式组合来的，所以去处某样式用～，想加上某一个用|，
+他们就是2进制之间关系，本身你也不知道旧字体的样式到底是怎样的，用~可以去处黑体
+
+~ 运算符对操作数执行按位求补运算，其效果相当于反转每一位
+& 运算符既可作为一元运算符也可作为二元运算符。一元 & 运算符返回操作数的地址
+为整型和 bool 类型预定义了二进制 & 运算符。对于整型，& 计算操作数的逻辑按位“与”。
+对于 bool 操作数，& 计算操作数的逻辑“与”；也就是说，当且仅当两个操作数均为 true 时，结果才为 true。 
+
+      当窗体的透明度为0时，窗体将直接不可见，不获取焦点
+      窗体的showintask属性可以设置程序运行时，在任务栏中是否显示程序图标
+动态添加控件
+            向控件或者窗体中动态添加控件语句
+            需要添加控件名称   ab ，将要添加的空间名称 bt；      ab.controls.add(bt);实现了控件的添加
+画图篇
+            System.Drawing.Image image = Image.FromFile(FPath);
+            System.Drawing.Graphics e = System.Drawing.Graphics.FromImage(image);//在原有图形image的基础上做图
+            System.Drawing.Font f = new System.Drawing.Font(a, Fsize,Fstyle);
+            System.Drawing.Brush b = new System.Drawing.SolidBrush(Fcolor);
+            e.DrawString(txt, f, b, x, y);
+            SizeF XMaxSize = e.MeasureString(txt,f);//获取刚才画的字符串的大小
+            Fwidth = (int)XMaxSize.Width;//获取刚才画的图形的宽
+            Fheight = (int)XMaxSize.Height;//获取刚才画的图形的高
+            e.Dispose();
+            pictureBox1.Image = image;
+
+            Bitmap mybmp = new Bitmap(bt, ig.Width, ig.Height);
+            mybmp.Save(picPath, ImageFormat.Bmp); break;//将图形文件保存到picpath路径下，格式为bmp格式
+字符串篇
+           txtChar.Text.Trim()//将字符串中的空格去掉
+           string picType = picPath.Substring(picPath.LastIndexOf(".") + 1, (picPath.Length - picPath.LastIndexOf(".") - 1));
+           //提取获得文件的类型
+           string path = filepath.Remove(filepath.LastIndexOf("\\"));//删除\后的所有字符得到剩下的字符，获得文件所在文件夹
+           string.remove(int)//删除此字符串中从指定位置到最后位置的所有字符
+           string.remove(int,int)  //从此实例中的指定位置开始删除指定数目的字符。 
+           string ab="543554";   int a;   a=in.parse(ab);
+            string a = "0003";
+            int b = int.Parse(a); label1.Text = " "; label1.Text = b.ToString();
+窗体调用篇
+            frmRename rename = new frmRename();
+            rename.filename = fName;
+            rename.filepath = FPath;
+            rename.filetype = fType;
+            rename.ShowDialog();//调用frmrename窗体，并对窗体的filename，filepath等变量进行覆值
+文件，文件夹篇
+            FileInfo fi = new FileInfo(newfilepath);
+           （fi.Exists）判断文件是否存在
+            File.Move(filepath, newfilepath);//将文件从filepath移动到newfilepath处
+            File.Delete(filepath);//删除文件filepath
+图片处理篇
+           浮雕
+           Bitmap myBitmap;
+           Image myImage = pictureBox2.Image;
+           myBitmap = new Bitmap(myImage);
+           for (int i = 0; i < myBitmap.Width - 1; i++)
+           {
+                for (int j = 0; j < myBitmap.Height - 1; j++)
+                {
+                        Color Color1 = myBitmap.GetPixel(i, j);
+                        Color Color2 = myBitmap.GetPixel(i + 1, j + 1);
+                        int red = Math.Abs(Color1.R - Color2.R + 128);
+                        int green = Math.Abs(Color1.G - Color2.G + 128);
+                        int blue = Math.Abs(Color1.B - Color2.B + 128);
+                        //颜色处理
+                        if (red > 255) red = 255;
+                        if (red < 0) red = 0;
+                        if (green > 255) green = 255;
+                        if (green < 0) green = 0;
+                        if (blue > 255) blue = 255;
+                        if (blue < 0) blue = 0;
+                        myBitmap.SetPixel(i, j, Color.FromArgb(red, green, blue));
+                  }
+            }
+           pictureBox2.Image = myBitmap;
+  
+           积木
+                    Graphics myGraphics = this.CreateGraphics();
+                    Bitmap myBitmap1 = new Bitmap(pictureBox2.Image);
+                    int myWidth, myHeight, m, n, iAvg, iPixel;
+                    Color myColor, myNewColor;
+                    RectangleF myRect;
+                    myWidth = myBitmap1.Width;
+                    myHeight = myBitmap1.Height;
+                    myRect = new RectangleF(0, 0, myWidth, myHeight);
+                    Bitmap bitmap = myBitmap1.Clone(myRect, System.Drawing.Imaging.PixelFormat.DontCare);
+                    m = 0;
+                    while (m < myWidth - 1)
+                    {
+                        n = 0;
+                        while (n < myHeight - 1)
+                        {
+                            myColor = bitmap.GetPixel(m, n);
+                            iAvg = (myColor.R + myColor.G + myColor.B) / 3;
+                            iPixel = 0;
+                            if (iAvg >= 128)
+                                iPixel = 255;
+                            else
+                                iPixel = 0;
+                            myNewColor = Color.FromArgb(255, iPixel, iPixel, iPixel);
+                            bitmap.SetPixel(m, n, myNewColor);
+                            n = n + 1;
+                        }
+                       m = m + 1;
+                    }
+                    myGraphics.Clear(Color.WhiteSmoke);
+                    myGraphics.DrawImage(bitmap, new Rectangle(0, 0, myWidth, myHeight));
+                    pictureBox2.Image = bitmap;
+
+             底片
+                    int myh = pictureBox2.Image.Height;
+                    int myw = pictureBox2.Image.Width;
+                    Bitmap bitp = new Bitmap(myw,myh);
+                    Bitmap mybitmap = (Bitmap)pictureBox2.Image;
+                    Color Mpixel;
+                    for (int mx = 1; mx < myw; mx++)
+                    {
+                        for (int my = 1; my < myh; my++)
+                        {
+                            int r, g, b;
+                            Mpixel = mybitmap.GetPixel(mx,my);
+                            r = 255 - Mpixel.R;
+                            g = 255 - Mpixel.G;
+                            b = 255 - Mpixel.B;
+                            bitp.SetPixel(mx,my,Color.FromArgb(r,g,b));
+                        }
+                    }
+                    pictureBox2.Image = bitp;
+
+             物化
+                    int wh = pictureBox2.Image.Height;
+                    int ww = pictureBox2.Image.Width;
+                    Bitmap wbitmap = new Bitmap(ww,wh);
+                    Bitmap wmybitmap = (Bitmap)pictureBox2.Image;
+                    Color wpixel;
+                    for (int wx = 1; wx < ww; wx++)
+                    {
+                        for (int wy = 1; wy < wh; wy++)
+                        {
+                            Random wmyrandom = new Random();
+                            int wk = wmyrandom.Next(123456);
+                            int wdx = wx + wk % 19;
+                            int wdy = wy + wk % 19;
+                            if (wdx >= ww)
+                            {
+                                wdx = ww - 1;
+                            }
+                            if (wdy >= wh)
+                            {
+                                wdy = wh - 1;
+                            }
+                            wpixel = wmybitmap.GetPixel(wdx,wdy);
+                            wbitmap.SetPixel(wx,wy,wpixel);
+                        }
+                    }
+                    pictureBox2.Image = wbitmap;
+
+               以底片效果显示图像   （ 原理: GetPixel方法获得每一点像素的值, 然后再使用SetPixel方法将取反后的颜色值设置到对应的点）
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap newbitmap = new Bitmap(Width, Height);
+                Bitmap oldbitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel;
+                for (int x = 1; x < Width; x++)
+                {
+                    for (int y = 1; y < Height; y++)
+                    {
+                        int r, g, b;
+                        pixel = oldbitmap.GetPixel(x, y);
+                        r = 255 - pixel.R;
+                        g = 255 - pixel.G;
+                        b = 255 - pixel.B;
+                        newbitmap.SetPixel(x, y, Color.FromArgb(r, g, b));
+                    }
+                }
+                this.pictureBox1.Image = newbitmap;
+
+               浮雕效果
+                原理: 对图像像素点的像素值分别与相邻像素点的像素值相减后加上128, 然后将其作为新的像素点的值.
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap newBitmap = new Bitmap(Width, Height);
+                Bitmap oldBitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel1, pixel2;
+                for (int x = 0; x < Width - 1; x++)
+                {
+                    for (int y = 0; y < Height - 1; y++)
+                    {
+                        int r = 0, g = 0, b = 0;
+                        pixel1 = oldBitmap.GetPixel(x, y);
+                        pixel2 = oldBitmap.GetPixel(x + 1, y + 1);
+                        r = Math.Abs(pixel1.R - pixel2.R + 128);
+                        g = Math.Abs(pixel1.G - pixel2.G + 128);
+                        b = Math.Abs(pixel1.B - pixel2.B + 128);
+                        if (r > 255)
+                            r = 255;
+                        if (r < 0)
+                            r = 0;
+                        if (g > 255)
+                            g = 255;
+                        if (g < 0)
+                            g = 0;
+                        if (b > 255)
+                            b = 255;
+                        if (b < 0)
+                            b = 0;
+                        newBitmap.SetPixel(x, y, Color.FromArgb(r, g, b));
+                    }
+                }
+                this.pictureBox1.Image = newBitmap;
+
+              黑白效果
+              原理: 彩色图像处理成黑白效果通常有3种算法；
+             (1).最大值法: 使每个像素点的 R, G, B 值等于原像素点的 RGB (颜色值) 中最大的一个；
+             (2).平均值法: 使用每个像素点的 R,G,B值等于原像素点的RGB值的平均值；
+             (3).加权平均值法: 对每个像素点的 R, G, B值进行加权
+                                   ---自认为第三种方法做出来的黑白效果图像最 "真实".
+
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap newBitmap = new Bitmap(Width, Height);
+                Bitmap oldBitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel;
+                for (int x = 0; x < Width; x++)
+                    for (int y = 0; y < Height; y++)
+                    {
+                        pixel = oldBitmap.GetPixel(x, y);
+                        int r, g, b, Result = 0;
+                        r = pixel.R;
+                        g = pixel.G;
+                        b = pixel.B;
+                        //实例程序以加权平均值法产生黑白图像
+                        int iType =2;
+                        switch (iType)
+                        {
+                            case 0://平均值法
+                                Result = ((r + g + b) / 3);
+                                break;
+                            case 1://最大值法
+                                Result = r > g ? r : g;
+                                Result = Result > b ? Result : b;
+                                break;
+                            case 2://加权平均值法
+                                Result = ((int)(0.7 * r) + (int)(0.2 * g) + (int)(0.1 * b));
+                                break;
+                        }
+                        newBitmap.SetPixel(x, y, Color.FromArgb(Result, Result, Result));
+
+                柔化效果     原理: 当前像素点与周围像素点的颜色差距较大时取其平均值.
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap bitmap = new Bitmap(Width, Height);
+                Bitmap MyBitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel;
+                //高斯模板
+                int[] Gauss ={ 1, 2, 1, 2, 4, 2, 1, 2, 1 };
+                for (int x = 1; x < Width - 1; x++)
+                    for (int y = 1; y < Height - 1; y++)
+                    {
+                        int r = 0, g = 0, b = 0;
+                        int Index = 0;
+                        for (int col = -1; col <= 1; col++)
+                            for (int row = -1; row <= 1; row++)
+                            {
+                                pixel = MyBitmap.GetPixel(x + row, y + col);
+                                r += pixel.R * Gauss[Index];
+                                g += pixel.G * Gauss[Index];
+                                b += pixel.B * Gauss[Index];
+                                Index++;
+                            }
+                        r /= 16;
+                        g /= 16;
+                        b /= 16;
+                        //处理颜色值溢出
+                        r = r > 255 ? 255 : r;
+                        r = r < 0 ? 0 : r;
+                        g = g > 255 ? 255 : g;
+                        g = g < 0 ? 0 : g;
+                        b = b > 255 ? 255 : b;
+                        b = b < 0 ? 0 : b;
+                        bitmap.SetPixel(x - 1, y - 1, Color.FromArgb(r, g, b));
+                    }
+                this.pictureBox1.Image = bitmap;
+                
+                锐化效果       原理:突出显示颜色值大(即形成形体边缘)的像素点.
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap newBitmap = new Bitmap(Width, Height);
+                Bitmap oldBitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel;
+                //拉普拉斯模板
+                int[] Laplacian ={ -1, -1, -1, -1, 9, -1, -1, -1, -1 };
+                for (int x = 1; x < Width - 1; x++)
+                    for (int y = 1; y < Height - 1; y++)
+                    {
+                        int r = 0, g = 0, b = 0;
+                        int Index = 0;
+                        for (int col = -1; col <= 1; col++)
+                            for (int row = -1; row <= 1; row++)
+                            {
+                                pixel = oldBitmap.GetPixel(x + row, y + col); r += pixel.R * Laplacian[Index];
+                                g += pixel.G * Laplacian[Index];
+                                b += pixel.B * Laplacian[Index];
+                                Index++;
+                            }
+                        //处理颜色值溢出
+                        r = r > 255 ? 255 : r;
+                        r = r < 0 ? 0 : r;
+                        g = g > 255 ? 255 : g;
+                        g = g < 0 ? 0 : g;
+                        b = b > 255 ? 255 : b;
+                        b = b < 0 ? 0 : b;
+                        newBitmap.SetPixel(x - 1, y - 1, Color.FromArgb(r, g, b));
+                    }
+                this.pictureBox1.Image = newBitmap;
+            
+              雾化效果   原理: 在图像中引入一定的随机值, 打乱图像中的像素值
+                int Height = this.pictureBox1.Image.Height;
+                int Width = this.pictureBox1.Image.Width;
+                Bitmap newBitmap = new Bitmap(Width, Height);
+                Bitmap oldBitmap = (Bitmap)this.pictureBox1.Image;
+                Color pixel;
+                for (int x = 1; x < Width - 1; x++)
+                    for (int y = 1; y < Height - 1; y++)
+                    {
+                        System.Random MyRandom = new Random();
+                        int k = MyRandom.Next(123456);
+                        //像素块大小
+                        int dx = x + k % 19;
+                        int dy = y + k % 19;
+                        if (dx >= Width)
+                            dx = Width - 1;
+                        if (dy >= Height)
+                            dy = Height - 1;
+                        pixel = oldBitmap.GetPixel(dx, dy);
+                        newBitmap.SetPixel(x, y, pixel);
+                    }
+                this.pictureBox1.Image = newBitmap;

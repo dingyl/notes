@@ -1,0 +1,228 @@
+linux程序安装在/usr/local/下
+
+安装软件前先看一下系统时间是否同步
+
+禁止root用户远程登陆
+	vim /etc/ssh/sshd_config
+		将PermitRootLogin yes改为no
+	重启sshd服务
+		service sshd restart
+配置开机自启动脚本
+	service memcached start   相当于  /etc/init.d/memecached start
+		实际上service是/sbin/service shell文件。service执行的是/etc/init.d/文件下的shell可执行文件
+	chkconfig设置开机启动
+		将服务脚本/etc/init.d/memcached 文件复制到/etc/rc.d/init.d/目录下
+			cp /etc/init.d/memcached /etc/rc.d/init.d
+		添加服务
+			chkconfig --add memcached
+		设置服务启动级别
+			chkconfig --level 2 memcached on
+		最终相当于运行
+			/etc/rc.d/init.d/memcached 脚本
+
+常用配置文件
+	vim /etc/rc.d/rc.local 中添加系统启动后执行的脚本
+	cat /etc/group			//查看当前的用户组
+	cat /etc/passwd			查看当前系统中的用户
+	cat /etc/shadow			查看系统中的用户密码
+	vim /etc/inittab		系统启动模式
+	/etc/sysconfig/network-script/ifcfg-eth0	网卡配置
+	cat /etc/hosts			系统hosts文件
+	cat /etc/resolv.conf		域名解析  dns服务器地址
+	/etc/rc.d/init.d/network	服务chkconfig设置的启动脚本
+	/etc/init.d/network			service命令启动的脚本
+	/etc/rc.sysinit脚本是系统初始化脚本   相当于init命令
+	/var/log/messages   系统日志文件
+	cat /etc/udev/rules.d/70-persistent-net.rules	网卡与mac地址映射
+	cat /etc/sysconfig/network
+
+lvs虚拟负载均衡
+    nat 技术
+        地址转换，只需要一个公网ip
+    ip tun技术
+        ip隧道模式，每一个服务器需要有一个隧道网卡。且每一个服务器都有一个真实的公网ip
+    dr 技术
+        直接路由  每一个服务器都有一个真实的公网ip。
+
+coreseek安装
+    apt-get install libtool autoconf automake  依赖需要安装的
+
+	遇到的问题:  
+	error: cannot find input file: src/Makefile.in  
+	或者遇到其他类似error错误时... 
+	libtoolize --automake --copy --debug --force
+
+	先安装中文分词mmseg
+		cd mmseg
+		aclocal
+		libtoolize --force
+		automake -–add-missing
+		autoconf
+		autoheader
+		make clean
+		./configure -–prefix=/usr/local/mmseg
+		make && make install
+
+	再安装csft
+		./configure --prefix=/usr/local/coreseek --with-mysql=/usr/local/mariadb --with-mmseg=/usr/local/mmseg --with-mmseg-includes=/usr/local/mmseg/include/mmseg/ --with-mmseg-libs=/usr/local/mmseg/lib/
+		make && make install
+
+	配置文件
+	cd /usr/local/coreseek
+	cp etc/sphinx.conf.disk    etc/csft.conf
+	修改配置后
+	cd /usr/local/coreseek/bin/
+	./indexer --all 重新建立索引   [  ./index 索引名称 --rotate 重新建立main索引  ]
+	./search  php  查询php
+	开启sphinx的searchd服务
+	/usr/local/coreseek/bin/searchd -c 配置文件地址   --stop  --pidfile  -p 指定端口
+
+	searchd服务起来后，再重新建立索引  ./indexer --all --rotate       
+
+	mysql>replace into sph_counter select 1,2
+
+	php打包spinx模块
+	先 安装sphinx客服端
+	cd /var/local/coreseek-3.2.14/csft-3.2.14/api/libsphinxclient
+	./configure
+	make && make install
+	再下载php扩展源码
+	wget      http://pecl.php.net/get/sphinx-1.1.0.tgz
+	tar 解压
+	cd 进入文件目录
+	/usr/local/php/bin/phpize     phpize工具生成configure文件
+	./configure --with-php-config=/usr/local/php/bin/php-config    
+	make && make install
+	cd /usr/local/php/lib/php/extensions/no-debug-non  下有生成动态库文件sphinx.so
+	修改php.ini支持php客户程序连接sphinx搜索
+	extension=sphinx.so
+	重启php-fpm 和nginx服务器使配置文件生效
+
+samba 服务配置
+    yum -y install samba
+    
+	修改配置文件
+    [global]    设置全局环境选项
+	workgroup  指定工作组或域
+	server string  描述
+	security    指定安全模式  [share访问smb时不需要密码|user 缺省，推荐|server|domain 第三方主机验证]
+	hosts allow = 127. 192.168.12. 192.168.13.   主机可以访问   在这里面允许优先
+	hosts deny    主机不可已访问
+	log file = /var/log/samba/%m.log  指定日志文件存放位置
+	max log size  指定日志文件大小，默认以kb为单位
+    [homes]    设置用户宿主目录共享
+	comment 描述
+	browseable  是否可读  no 无权限共享目录隐藏
+	writable 是否可写    no只读 yes可写
+	[printers]    设置打印机共享
+	[sharefiles]    设置共享文件
+	[web] 共享目录名称
+	path = /home/wwwroot/default
+	#可读
+	browseable = yes
+	writable = yes
+
+	重启服务service smb restart  
+
+	添加用户
+	useradd -M -s /sbin/nologin  www
+	smbpasswd -a www   设置smb密码
+	window访问    \\192.168.43.128\web    但不具有修改文件的权限，设置文件的权限
+	linux访问  smbclient //192.168.43.128/web -U www
+	挂载smb共享文件  mount -t cifs -o username=www,passwd='pwd'  //192.168.1.1/web  /tmp/www
+
+	如果selinux开启，则要么关闭，要么允许sam访问目录
+		setsebool -P samba_enable_home_dirs on
+
+	cmd下查看当前连接
+	net use
+	net ues  /delete  *   清空当前的连接，重新连接可以切换用户
+
+	查看smb服务状态  smbstatus  可以看到访问的客户端的一些信息
+
+    web 开发权限设置
+    ps auxf | grep nginx
+    ps auxf | grep php-fpm  可以看到进程的用户为www.两者应该保持一致。当通过浏览器访问的时候，所有的用户的身份都为www。因此需要设置www的权限来控制网页用户的对网页文件的权限，例如上传文件。
+    smb共享目录不具有写权限
+    赋予权限
+    setfacl -m d:u:www:rwx -R /home/wwwroot/default/   这样就可以在default下创建文件。且文件的所有者和组都是www
+    getfacl 目录       获取对这个目录的所有用户权限信息
+
+	访问共享目录创建目录或文件时根据两个权限
+		1）samba是否授予写权限
+		2）用户在linux系统中是否有写权限
+		这两个权限需要取交集才能够实现真正的写权限
+		新建一个组，将这两个用户添加进这个组中，对组进行授权
+	
+	
+	实例1，设置共享目录/software 允许用户jack和mary访问且具有读写权限
+		1,创建目录/software,添加用户jack与mary
+		2，如果selinux启动，启动用户可访问系统目录
+		chcon -t samba_share_t  共享目录
+		3，在配置文件末尾添加
+		[software] 共享名
+			path = /software  共享目录
+			valid users = jack mary
+			writable = yes
+
+	实例2,建立一个公共的只读目录，所有人可以浏览目录的内容
+		[public]
+			comment = read only public
+			path = /
+			writable = no	
+
+	实例3，建立部门资料共享目录，每个人都可以读写但不可以删除别人的文件
+		[hr]
+			path = /hr
+			valid users = zhangsan lisi wangwu
+			writable = yes
+		chmod 1777 /hr
+
+	testparm  用来检测sam配置文件有没有语法错误，开启前应该注意检测
+
+nfs  
+    安装
+    rpm -q portmap
+    rpm -qa | grep nfs
+    默认已经安装
+    启动
+    service portmap start
+    service nfs start
+    查看状态
+    nfs 是基于rpc协议的
+    rpcinfo -p  可以查看基于rpc的进程信息
+    
+    配置/etc/exports   不进行用户控制
+    /public  允许所有主机访问/public
+    /website 192.168.16.128(ro)  允许此ip用户只读权限访问/website
+    exportfs -rv  重新输出共享目录格式
+    showmount -e ip  可以查看这个主机nfs服务器的共享目录
+    mount ip:/共享目录地址  挂载点
+
+    系统启动自动挂载配置
+    /etc/fstab
+    格式
+    目录    挂载点    文件系统    权限    是否检测    检测顺序   
+    ip:/目录   挂载点  nfs ro  0 0        【nfs自动挂载】
+
+vsftp 配置【proftp】
+	yum -y install vsftpd//安装服务
+    service vsftpd start//启动服务
+	
+	chkconfig --list | grep vsftpd//查看开机启动设置
+
+	chkconfig --level 2345 vsftpd on//设置开机自启动
+    vim /etc/vsftpd/vsftpd.conf//编辑配置文件
+	默认共享目录是/var/ftp/目录
+	ftp://ip
+    默认启动，用户登陆可以访问自己的宿主目录
+
+redis基础命令
+	setex name 3 ding  //设置name的值为ding，且有效期为3秒
+	setnx name liweijie#如果键已存在则返回0,不更新,防止覆盖。
+	del name  //删除name
+	get name //获取name的值
+	keys * 查询所有的值
+	keys name //获取name的值，和get的返回值有区别
+
+rpm软件管理

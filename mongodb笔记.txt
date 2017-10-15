@@ -1,0 +1,249 @@
+show dbs	显示所有的数据库
+db		显示当前的数据库
+show tables | show collections	显示当前库下的所有表（集合）
+use db	切换数据库，如果数据库不存在就创建数据库，需要在数据库中插入数据否则数据库创建不成功
+db.c1.insert({name:"ding"});	插入json数据  会隐式创建数据表c1
+db.c1.save({})	基本上和insert的功能相同，只有当插入的数据_id和已有的数据相同的时候，就变成更新了
+db.c1.remove({});	删除所有的数据
+db.c1.drop();删除集合
+db.dropDatabase();删除数据库
+db.createCollection("c1");显示的创建集合
+db.c1.update({});	更新数据
+
+$set
+db.c1.update({name:"ding"},{$set:{name:"dingidng",age:24}});	在原有数据基础上更新,如果不存在就新加一个字段
+db.c1.update({name:"ding"},{age:10}) 用新的数据完全覆盖原有的数据
+查询条件表达在json内侧，更新条件表达在json外侧
+db.c1.update({name:"ding"},{},0,1)	;将匹配的数据全部更新。不匹配不插入新数据
+
+$inc
+db.c2.update({},{$inc:{score:10}},0,1) 将所有匹配的元素的score增加10，如果不存在score字段，创建score字段，并添加10
+db.c2.update({},{$inc:{score:-10}},0,1)
+
+$unset 删除字段
+db.c2.update({},{$unset:{post:1}},0,1) 将所有的post字段删除,_id字段是删除不掉的
+
+
+对数组进行操作
+	$push 		用来处理数组的,向数组中添加一个元素，不能压入多个值。添加的元素可以重复
+	$pushAll  可以用来压入多个值
+	db.c5.insert({name:"user1",arr:[1,2,3,4]})
+	db.c5.update({},{$push:{arr:5}})
+	db.c5.update({},{$pushAll:{arr:[5,6,7,8]}})
+
+	$pop 	弹出数组中的最后一个值
+	{$pop:{field:1}}	删除数组中最后一个元素
+	{$pop:{field:-1}}	删除数组中的第一个元素
+
+	$addToSet	添加的元素如果重复的话就会删除，只保留一个
+	db.c5.update({},{$addToSet:{arr:5}})
+	配合$each压入多个值
+	db.c5.update({},{$addToSet:{arr:{$each:[4,5,6]}}})
+
+	$pull	根据值来删
+	{$pull:8}
+	{$pullAll:[2,4,6]}
+
+$rename 修改字段的名称
+{$rename:{"arr":"post"}} 将字段arr改为post	
+
+$
+db.c5.insert({arr:[{tit:"java"},{tit:"php"}]})
+db.c5.update({"arr.tit":java},{$set:{"arr.$.cnt":"java is good"}})	只将匹配的第一个json进行修改
+
+
+db.c1.find().toArray().length	相当于db.c1.find().count()
+db.c1.find().count(0|1)	count(1)才能够将前面的条件也认为是限制
+当count前面有用到skip,limit的时候记得count(1)这样用
+db.c1.find({name:"ding"},{name:1})   查询name为ding的，并只显示name列。默认_id列是显示的
+db.c1.find({age:{$gt:4}})	显示name大于4的
+				$gte
+				$lte
+				$lt
+				$ne
+db.c1.find().sort({age:-1}) 以age倒序排列
+db.c1.find().sort({name:1})	以name正序排列
+
+db.c1.findOne()   	只显示最前面的一个元素
+
+db.c1.find().skip(m).limit(n) 跳过m个，显示n个
+
+执行级别
+find sort skip limit
+
+$all 针对数组的
+db.c2.Insert({name:"user10",post:[1,2,3,4,5]})
+db.c2.find({post:{$all:[1,2,3]})	查找post中包含数组元素1，2，3的
+$exists 用来判断字段是否存在
+db.c1.find({name:{$exists:1}}).count(1)	显示存在name字段的所有记录
+
+$mod 取余
+db.c1.find({age:{$mod:[2,0]}})		取余2为0的所有记录
+
+$in	
+db.c1.find({age:{$in:[1,3,5]}})	age在【1，3，5】中的元素
+$nin
+db.c1.find({age:{$nin:[1,3,5]}})	age不再【1，3，5】中的元素
+
+$nor
+db.c1.find({$nor:[{name:"user1"},{name:"user4"},{age:5}]})	不符合所有条件的记录
+$or
+db.c1.find({$or:[{name:"user1"},{name:"user4"},{age:5}]})	符合任意条件的记录
+
+db.c1.find({name:"user1",age:2})	符合所有条件的记录
+
+$size  用来查询数组长度的
+db.c2.find({post:{$size:5}})   查询post数组长度为5的所有记录
+
+$where
+
+
+正则表达式
+db.c1.find({name:/user1/i})
+
+
+db.c1.distinct("name")
+
+
+db.c1.find({"post.tit":2})
+$elemMatch		用来匹配json的
+db.c1.find({post:{$elemMatch:{tit:2}}})		和上面的db.c1.find({"post.tit":2})同等效果
+只是为了避免php等.有特殊意义的语言
+
+游标
+var x = db.c1.find()	x游标获取所有查询数据
+x
+打印所有的数据,游标清空
+
+x.hasNext()	判断当前的游标有没有值。返回值为 true|false
+x.next()	返回值
+
+null
+db.c3.find({age:null})  这样查询age不存在的一将会显示出来
+如果想要查询age就是null的可以这样
+db.c3.find({age:{$exist:1,$in:[null]}})
+db.c3.find({age:{$type:10}})
+
+$type:10 	数据类型为null的
+
+
+db.stats()		数据库的状态
+
+固定集合需要显示的创建使用。且必须指定文档上限和大小
+
+创建一个固定集合，大小10K，最多5个记录
+db.createCollection("my_collection",{capped:true,size:100000,max:10});
+
+固定集合
+	查询，插入速度快
+	能够在插入最新数据的时候，淘汰最早的数据
+	用于：储存日志信息，和缓存一些少量的文档
+	
+将普通集合转换为固定集合
+
+db.runCommand({convertTocapped:"c1",size:10000,max:3});
+
+GridFS 大文件系统，用来存储文件
+./mongofiles put 文件	上传一个文件
+./mongofiles get 文件	下载文件
+./mongofiles delete 文件	删除文件
+./mongofiles list	获取上传文件列表
+
+db.fs.files.find()
+db.fs.chunks.find()
+
+查询速度与扫描的函数有关
+	db.c1.find({}).explain()  用来显示当前的查询语句扫描的行数，可以用来进行优化的
+
+建立索引
+	db.persons.ensureIndex({name:1})在name上建立索引，1升序，-1降序
+	db.t3.ensureIndex({age:1},{background:true},{unique:1}) 建立索引，在后台执行,且是唯一索引
+获取索引数组
+	db.c1.getIndexKeys() | db.c1.getIndexes() 返回集合的索引数组
+删除索引
+	db.c1.dropIndex({name:1})
+	db.c1.dropIndexes()删除集合的所有索引，只剩下_id
+
+创建唯一索引后，就不能再插入相同的了
+
+
+db.getProfilingLevel()  获取慢查询日志状态
+打开慢查询日志
+	方法1:在启动的时候 --profile=1 --auth  --slowns 设置毫秒数，用来判断耗时多少记录
+	方法2:db.setProfilingLevel(val)  0 不打开，1记录慢命令（>100ms）,2 记录所有命令
+	
+性能监控工具
+mongosniff --source net lo //抓取是通信数据
+
+mongostat	//
+
+数据导入导出
+	mongoexport -d db -c collection -o /tmp/c1.out   导出数据 
+	mongoimport -d db -c collection /tmp/c1.out		导入数据
+数据备份,恢复  备份保存的是二进制数据
+	mongodump -d db [-c collection] -o /tmp/db 	备份数据库
+	mongorestore -d db /tmp/db					恢复数据
+用户安全认证		--auth 开启用户验证   将会有admin集合
+	默认是以超级管理员登录
+	use admin
+	db.auth("uanem","pwd") 验证用户
+	db.addUser("uanme","pwd")	//在admin集合中添加超级管理员用户	设定了用户后就没有查表的权限了就需要重新登陆了
+	
+	在普通数据库中添加用户，就是添加普通数据库管理用户，语法一致，
+	./mongo -uroot -p123 localhost:27017/admin   登录，在admin表中进行验证
+	
+	
+启动mongod数据库
+	./mongod --dbpath=/usr/local/mongod/data --logpath=/usr/local/mongod/dblogs --fork	最基本的启动方式
+	
+主从复制
+	创建所需要的文件
+		mkdir data1 data2
+		touch dblogs1 dblogs2
+
+	主服务器
+		./mongod --master --dbpath=/usr/local/mongod/data1/ --logpath=/usr/local/mongod/dblogs1 --fork --port 20001
+	从服务器
+		./mongod --slave --source=127.0.0.1:20001 --dbpath=/usr/local/mongod/data2/ --logpath=/usr/local/mongod/dblogs2 --fork --port 20002
+	
+	这样主从服务器就配好了
+	
+	备份数据库就可以在从服务器上进行备份
+	
+设置副本集replica sets
+(主要用来进行故障自动转换的,当主挂掉，在从服务器中选举产生新的主服务器)
+	先创建文件
+		mongod/
+		├── bin
+		├── data
+		│   ├── data1
+		│   └── data2
+		├── key		暗号 key中的内容必须一致
+		│   ├── key1 echo "123456" > key1	chmod 600(必须的)
+		│   └── key2 echo "123456" > key2	chmod 600（必须的）
+		└── log
+			├── dblog1
+			└── dblog2
+			
+		小组内服务器
+		./mongod --replSet rs1 --keyFile=/usr/local/mongod/key/key1 --port 20001 --dbpath=/usr/local/mongod/data/data1/ --logpath=/usr/local/mongod/log/dblog1 --fork
+		./mongod --replSet rs1 --keyFile=/usr/local/mongod/key/key2 --port 20002 --dbpath=/usr/local/mongod/data/data2/ --logpath=/usr/local/mongod/log/dblog2 --fork
+	
+		登录配置初始化
+		./mongo --port 20001
+		config_rs1={
+			_id:"rs1",members:[	//生命小组成员
+				{_id:0,host:"localhost:20001",priority:1},
+				{_id:1,host:"localhost:20002",priority:2} //优先集高的在选举中作为主服务器
+			]
+		}
+		
+		rs.initiate(config_rs1)  初始化
+		
+		登录从服务器执行 rs.slaveOk()   这样从服务器才能够查看数据(具有读的权限)
+		
+		rs.status()		用来查看副本集成员相关状态信息
+		
+		db.getMongo() 获取当前的mongo连接信息
+		db.getMongo().setSlaveOk() | rs.slaveOk() 效果相同，让从具有读的权限，分担主库的压力
+	

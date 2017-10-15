@@ -1,0 +1,90 @@
+redis扩展安装
+	判断是扩展包还是安装包
+		扩展包下面有config.m4文件
+
+	编译安装
+		tar -zxf redis-3.1.4.tgz;
+		cd redis-3.1.4;
+		phpize
+		./configure --with-php-config=/usr/local/php/bin/php-config
+		make && make install
+
+	安装后的扩展在目录			
+		/usr/local/php/lib/php/extensions/no-debug-non-zts-20121212/
+
+	启用扩展
+		vim /usr/local/php/etc/php.ini
+		添加extension=redis.so
+	重启php-fpm
+		service php-fpm restart
+
+redis安装
+	redis安装
+		wget http://download.redis.io/releases/redis-4.0.2.tar.gz
+		tar xzf redis-4.0.2.tar.gz
+		cd redis-4.0.2
+		make
+	编译完成,redis的可执行程序都已生成在redis-4.0.2/src目录下
+
+	mkdir -p /usr/local/redis/bin
+	mkdir -p /usr/local/redis/conf
+	mkdir -p /usr/local/redis/run
+	mkdir -p /usr/local/redis/db
+
+	进入redis-4.0.2/src目录下
+	将以下文件cp到/usr/local/redis/bin目录下
+		cp redis-benchmark redis-check-aof redis-check-rdb redis-cli redis-sentinel redis-server /usr/local/redis/bin/
+	将配置文件移过去
+		[root@localhost redis-4.0.2]# cp redis.conf /usr/local/redis/conf/
+	修改配置文件
+		vim /usr/local/redis/conf/redis.conf
+			daemonize yes
+			pidfile /usr/local/redis/run/redis.pid
+			dir /usr/local/redis/db
+	修改内核参数,避免redis重启或者停止时出错
+		vi /etc/sysctl.conf
+			vm.overcommit_memory = 1
+	内核参数生效
+		sysctl -p
+
+	制作启动脚本,将window下的文件复制过来的需要执行dos2unix filename
+		vim /etc/init.d/redis
+		chmod 755 /etc/init.d/redis
+		chkconfig --add redis
+	启动服务
+		service redis start
+
+
+memcached命令行访问
+	访问memcache
+		telnet localhost 11211
+	安装memcache
+		yum -y install memcache
+
+	配置开机自启动脚本
+	service memcached start   相当于  /etc/init.d/memecached start
+		实际上service是/sbin/service shell文件。service执行的是/etc/init.d/文件下的shell可执行文件
+
+	/etc/rc.sysinit脚本是系统初始化脚本   相当于init脚本
+
+	chkconfig设置开机启动
+		将服务脚本/etc/init.d/memcached 文件复制到/etc/rc.d/init.d/目录下
+			cp /etc/init.d/memcached /etc/rc.d/init.d
+		添加服务
+			chkconfig --add memcached
+		设置服务启动级别
+			chkconfig --level 2 memcached on
+		最终相当于运行
+			/etc/rc.d/init.d/memcached 脚本
+
+	设置开机自启动
+		chkconfig --level 2345 memcached on
+	开启服务
+		service memcached start
+
+redis命令行访问
+	/usr/local/redis/bin/redis-cli
+mongodb命令行访问
+	/usr/local/mongod/bin/mongo
+php连接
+	$conn = memcache_connect('localhost', 11211);

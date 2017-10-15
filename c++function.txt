@@ -1,0 +1,142 @@
+﻿strlen(char *) 返回字符串的长度   sizeof() 返回变量申请时所占内存大小
+
+函数名: strcpy 
+功 能: 拷贝一个字符串到另一个
+用 法: char *strcpy(char *destin, char *source); 
+
+strncpy(char destination[], const char source[], int numchars);
+strncpy：将字符串source中前numchars个字符拷贝到字符串destination中。
+
+函数名: strcat
+功 能: 字符串拼接函数 
+用 法: char *strcat(char *destin, char *source);
+
+strncat(char target[], const char source[], int numchars);
+strncat:将字符串source的前numchars个字符接到字符串target的后面。
+
+
+函数名: strchr
+功 能: 在一个串中查找给定字符的第一个匹配之处\ 
+用 法: char *strchr(char *str, char c);
+
+函数名: strrchr 
+功 能: 在串中查找指定字符的最后一个出现 
+用 法: char *strrchr(char *str, char c);
+
+函数名: strcmp 
+功 能: 串比较 
+用 法: int strcmp(char *str1, char *str2); 
+看Asic码，str1>str2，返回值 > 0；两串相等，返回0
+
+函数名: strcspn 
+功 能: 在串中查找第一个给定字符集内容的段 
+用 法: int strcspn(char *str1, char *str2);
+
+函数名: strrev 
+功 能: 串倒转 
+用 法: char *strrev(char *str);
+
+
+函数名: strupr 
+功 能: 将串中的小写字母转换为大写字母 
+用 法: char *strupr(char *str);
+
+
+
+int strtoint(char *a)
+{
+	int sum=0;
+	for(int i=0;i<strlen(a);i++)
+	{
+		sum=sum*10+int(a[i])-48;
+	}
+	return sum;
+}
+
+char *inttostr(int n)
+{
+	char a[100];
+	int i=0;
+	while(n!=0)
+	{
+		a[i]=char((n%10)+48);
+		n=n/10;
+		i++;
+	}
+	a[i]='\0';
+	return strrev(a);
+}
+
+
+一、获取日历时间 
+time_t是定义在time.h中的一个类型，表示一个日历时间，也就是从1970年1月1日0时0分0秒到此时的秒数，原型是：
+typedef long time_t;        /* time value */ 
+可以看出time_t其实是一个长整型，由于长整型能表示的数值有限，因此它能表示的最迟时间是2038年1月18日19时14分07秒。 
+函数time可以获取当前日历时间时间，time的定义：  time_t time(time_t *)   
+#include <iostream> 
+#include <time.h> 
+using namespace std;
+int main(void) 
+{ 
+ time_t nowtime; 
+ nowtime = time(NULL); //获取当前时间  
+ cout << nowtime << endl;    
+ return 0; 
+}
+
+
+
+二：获取本地时间  
+time_t只是一个长整型，不符合我们的使用习惯，需要转换成本地时间，就要用到tm结构，time.h中结构tm的原型是：
+ struct tm { 
+        int tm_sec;     /* seconds after the minute - [0,59] */        
+	    int tm_min;     /* minutes after the hour - [0,59] */         
+	    int tm_hour;    /* hours since midnight - [0,23] */         
+		int tm_mday;    /* 返回一月中的第几天*/         
+		int tm_mon;     /* months since January - [0,11] */         
+		int tm_year;    /* years since 1900 */ 
+        int tm_wday;    /* 返回一周中的第几天，星期日为一周中的第一天 */         
+		int tm_yday;    /* 返回一年中的第几天*/         
+		int tm_isdst;   /* daylight savings time flag */        
+		}; 
+可以看出，这个机构定义了年、月、日、时、分、秒、星期、当年中的某一天、夏令时。可以用这个结构很方便的显示时间。
+用localtime获取当前系统时间，该函数将一个time_t时间转换成tm结构表示的时间，
+
+函数原型：  
+struct tm * localtime(const time_t *) 
+
+使用gmtime函数获取格林尼治时间，
+函数原型：  
+struct tm * gmtime(const time_t *) 
+为了方便显示时间，定义了一个函数
+void dsptime(const tm *);
+
+#include <iostream> 
+#include <time.h> 
+using namespace std; 
+void dsptime(const tm *); //输出时间
+
+int main(void) { 
+ time_t nowtime; 
+ nowtime = time(NULL); //获取日历时间  
+ cout << nowtime << endl;  //输出nowtime  struct tm *local,*gm; 
+ local=localtime(&nowtime);  //获取当前系统时间  
+ dsptime(local);  
+ gm=gmtime(&nowtime);  //获取格林尼治时间  
+ dsptime(gm);     return 0; 
+ } 
+ 
+ void dsptime(const struct tm * ptm) 
+ { 
+ char *pxq[]={"日","一","二","三","四","五","六"}; 
+ cout << ptm->tm_year+1900 << "年" << ptm->tm_mon+1 << "月" << ptm->tm_mday << "日 ";
+ cout << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec <<" " ; 
+ cout << " 星期" <<pxq[ptm->tm_wday] << " 当年的第" << ptm->tm_yday << "天 " << endl; 
+ } 
+输出结果： 1268575163 
+2010年3月14日 21:59:23  星期日 当年的第72天 2010年3月14日 13:59:23  星期日 当年的第72天
+
+
+四、计算时间间隔 
+可以通过difftime来计算两个时间的间隔，可以精确到秒，
+函数原型：  double difftime(time_t, time_t)

@@ -1,0 +1,86 @@
+缓存设置
+	S(key,$value,expire);
+
+
+获取控制器和方法的名称
+	echo CONTROLLER_NAME;
+    echo '<br/>'.ACTION_NAME;
+
+
+文件上传时，表单要有enctype="multipart/form-data" 属性，否则无法上传文件
+
+
+在一个方法中多次M操作，情况不可估
+
+html模板页面中在<?php if(){?>  str="{$var}"  <?php }?>   不可用
+
+默认情况下没有定义控制器下的login方法，但有了login.html页面，会直接显示login.html页面
+
+save方法的返回值是影响的记录数，如果返回false则表示更新出错，因此一定要用恒等来判断是否更新失败。
+
+
+M()->getField('model');默认只取第一行数据的model值
+M()->getField('model',true);取所有数据的model值，返回数组
+
+url跳转:
+	$this->success(msg,url),  $this->error(msg,url);这里面的url没有U方法中的url方便
+
+$this->redirect("admin/index","msg")  跳转不显示msg
+
+public function _initialize(){
+	//进行权限验证的相关判断
+}
+
+I() 函数不会去除掉空字符
+
+自动完成
+	$model->create(); 自动完成的数据是post的数据
+	如果是get提交方式需要$model->create($_GET);
+
+使用富文本编辑器的时候不要开启调试模式
+
+$this->assign($data);可以重复使用，后面的不会覆盖前面的
+
+模板中使用
+	<li><a href="{:U('blog/bloglist',array('cateid'=>$ov['cateid']))}">{$ov['catename']}</a></li>
+
+<if condition="!empty($catelist)">
+	<foreach name="catelist" key="k" item="v">
+		<li class='nav-lv1-li'>
+			<a href="javascript:;" class='top-cate'>{$v['catename']}</a>
+			<if condition="!empty($v['child'])">
+				<ul>
+					<foreach name="v['child']" key="ok" item="ov">
+						<li><a href="">{$ov['catename']}</a></li>
+					</foreach>
+				</ul>
+			</if>
+		</li>
+	</foreach>
+</if>
+
+
+kindeditor文本编辑器中图片上传
+	KindEditor.ready(function(K) {
+		var editor = K.create('textarea[name="articlecontent"]', {
+			cssPath : '__ROOT__/kindeditor/plugins/code/prettify.css',
+			uploadJson : "{:U('article/imgupload')}"
+		});
+		prettyPrint();
+	});
+
+	public function imgupload(){
+		if($_FILES['imgFile']['error']==0){
+			$upload = new \Think\Upload();// 实例化上传类
+			$upload->maxSize   =     3145728 ;// 设置附件上传大小
+			$upload->exts      =     array('jpg', 'gif', 'png', 'jpeg');
+			$upload->rootPath  =     './upload/editor/img/';
+			$info   =   $upload->upload();
+			if(!$info){
+				echo json_encode(array('error'=>1,'message'=>$upload->getError()));
+			}else{
+				$file_url = $info['imgFile']['savepath'].$info['imgFile']['savename'];
+				echo json_encode(array('error' => 0, 'url' =>  __ROOT__."/upload/editor/img/".$file_url));
+			}
+		}
+	}

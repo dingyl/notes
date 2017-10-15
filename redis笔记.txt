@@ -1,0 +1,44 @@
+值类型
+string，hash，list，set
+
+set name "ding"       赋值
+setnx name "ding"   如果name不存在赋值
+setex name 30 "ding"   赋值和设置过期时间一起
+expire name 30        设置name的生存日期为30秒
+expireat name 1355292000  设置name到这个时间戳的时候过期
+persist name             移除name的生存日期
+ttl name                    查看name的剩余生存日期
+del name                  删除key
+get name                  返回值
+rename oldkey newkey   修改key的名字
+exists name               判断是否存在name
+type name                 返回key所储存的值的类型
+d
+批量赋值
+eg:  mset key1 value1 key2 value2
+批量取值
+eg:  mget key1 key2 key3
+
+
+查询key
+eg:
+    set name "ding"
+    set oame "meishi"
+keys *                返回所有的key
+keys ?ame        返回后缀为ame的所有key
+keys [on]ame   返回后缀为ame，其前缀为o或者n的所有key
+
+Randomkey      返回随机的key，如果没有key存在返回nui
+
+字符串处理
+strlen str                            返回长度
+getrange str start end       截取字符串
+append str str1                 将str1追加到str后面
+
+整型处理
+incr key    加1
+incrby key val 加val
+decr key   减1
+decrby key val  减val
+
+hash

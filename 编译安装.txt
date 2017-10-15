@@ -1,0 +1,17 @@
+源码包安装
+源码包是开源的可自行更改的程序包，大多用C语言开发，不能直接使用，需要编译成二进制的可执行文件；
+编译源码包的必须有gcc支持，如果没有需要安装 yum install -y gcc
+通常情况编译三步曲: ./configure 配置各种编译参数; make 根据指定的编译参数进行编译；make install 安装到指定目录
+
+实例：
+1、下载源码包#cd /usr/local/src/ #约定目录；
+  首先安装wget，安装命令：yum install -y wget   
+
+  #wget http://mirrors.hust.edu.cn/apache//httpd/httpd-2.2.29.tar.gz 
+2、解压tar zxvf httpd-2.2.29.tar.gz  //查看README或者INSTALL说明文件
+3、指定编译参数 ./configure --help  可以查看帮助
+  #./configure --prefix=/usr/local/apache2    指定一个安装路径；
+  执行时提示checking for gcc... no    需要安装gcc编译器；安装命令#yum install -y gcc
+4、#echo $? 验证是否成功
+5、#make    编译成二进制的文件；
+6、#make install    安装编译后的文件；
