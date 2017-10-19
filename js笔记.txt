@@ -14,6 +14,8 @@
 	<meta?http-equiv="Cache-Control"?content="max-age=5"?/>??
 	console.log(String.fromCharCode(72,69,76,76,79)); 将ASCII值数组转化成字符串
 	
+	字符串逆置
+	str.split('').reverse().join('')
 页面打印
 	window.print();
 

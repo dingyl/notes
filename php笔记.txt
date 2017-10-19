@@ -474,7 +474,7 @@ $_REQUEST获取的数据包含GET,POST,COOKIE,SESSION 所有数据而且按照EG
 	pathinfo();
 	is_dir();
 	file_exists();
-	filesize
+	filesize()
 	unlink();
 	ord() 转换成ascii值
 	chr() 转换成字符

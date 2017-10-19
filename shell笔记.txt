@@ -348,6 +348,11 @@ grub 命令
 			mount -t iso9660 -o loop a.iso /mnt
 			mount -t proc none /mnt
 		挂载windows下的共享文件
+			uid=`id -u www`
+			gid=`id -u www`
+			mount -t cifs -o username=ding,passwd=93177852,uid=$uid,gid=$gid,file_mode=0777,dir_mode=0777 //192.168.1.4/share /home/www/share/
+
+			默认文件所有者为root
 			mount -t cifs -o username=ding,passwd='pwd'  //192.168.1.101/shares   /var/www/html/       挂载windows|linux下的共享文件
 
 解压缩文件

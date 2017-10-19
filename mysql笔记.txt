@@ -489,7 +489,7 @@ mysql忘记密码
 	//使用--skip-grant-tables启动mysql时不可使用grant命令的，所以只有我们手工来设置权限表了
 	修改用户或者添加用户
 	如果表中有root用户
-		update user set password=password("123") where user="root"; 修改密码
+		update user set password=password("93177852") where user="root"; 修改密码
 	如果没有用户
 		insert into user('user','password') values('root',password('123456'));
 		update user set Select_priv='Y' ,Insert_priv='Y' ,Update_priv='Y' ,Delete_priv='Y' ,Create_priv='Y' ,Drop_priv='Y' ,References_priv='Y',Grant_priv='Y',Index_priv='Y',Alter_priv='Y',Create_tmp_table_priv='Y', Lock_tables_priv='Y',Create_view_priv='Y',Grant_priv='Y',Show_view_priv='Y',Create_routine_priv='Y', Alter_routine_priv='Y', 	Execute_priv='Y' where user='root';
