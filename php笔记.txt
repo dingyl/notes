@@ -7,6 +7,33 @@
 
 	$filepatharr = require_once files.php
 
+延迟加载
+	function my_loader($className){
+		require($className.".php");
+	}
+	spl_autoload_register("my_loader");
+
+
+静态属性具有延迟绑定的效果
+	class fruit{
+		public static $weight=23;
+		public function get_weight(){
+			return static::$weight;
+		}
+	}
+
+	class apple{
+		public static $weight=12;
+	}
+
+	$app = new apple();
+	echo $app->get_weight();//12   将static::$weight改为self::$weight
+
+用final修饰的方法不能继承
+	final public function test();
+
+self,parent关键字  ::用来访问类的属性和方法 ->用来访问对象的属性和方法
+static::$sex;//访问静态属性
 
 php数据库操作
 	$db = new mysqli("localhost","root","root","blog");
@@ -56,26 +83,7 @@ php语言中变量命名区分大小写，函数,类命名不区别大小写
 	new DEMO()和new demo();两者的效果是一样的
 	p($arr)和P($arr) 都是一样的效果
 
-self,parent关键字  ::用来访问类的属性和方法 ->用来访问对象的属性和方法
 
-static::$sex;//访问静态属性
-静态属性具有延迟绑定的效果
-class fruit{
-	public static $weight=23;
-	public function get_weight(){
-		return static::$weight;
-	}
-}
-
-class apple{
-	public static $weight=12;
-}
-
-$app = new apple();
-echo $app->get_weight();//12   将static::$weight改为self::$weight
-
-
-final public function test();用final修饰的方法不能继承
 
 魔术常量
 	魔术常量名称没有大小写的区分，建议按标准用大写的方式
