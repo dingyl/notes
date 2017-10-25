@@ -142,7 +142,10 @@ find文件查找
 grep文件内容操作
 	grep -v(反向显示，不包含的显示出来) -A5(上面五行) -B5(下面五行) fdemo /etc/passwd | cut -d: -f7
 	grep -v '^$' 去掉空行
-	grep -rn include ./    获取遍历当前文件夹下的所有文件中包含include字符的文件的名称和所在的行号
+	grep -rn include ./
+	mac下
+	grep include -rn ./
+	获取遍历当前文件夹下的所有文件中包含include字符的文件的名称和所在的行号
 	grep -l只显示目录 -R整个目录
 	
 网络测试 命令
