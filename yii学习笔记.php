@@ -93,7 +93,6 @@
 	ActiveRecord活动记录
 		默认有三个数据模型
 
-		<?php 
 		namespace app\models;
 		use yii\db\ActiveRecord;
 		class Article extends ActiveRecord{
@@ -190,7 +189,7 @@
 			<?php $this->beginBlock('script');?>
 				<p>this is script</p>
 			<?php $this->endBlock('script');?>
-
+	
 	gii
 		//入口index.php文件开启gii
 			define('YII_ENV_DEV', true);
@@ -292,13 +291,13 @@
 
 			db依赖
 				$dependency = new \yii\caching\DbDependency(['sql'=>'select count(*) from article']);
-			$cache->add('key','value',expires,$dependency);
+				$cache->add('key','value',expires,$dependency);
 
 		片段缓存//页面  可以做嵌套
 			有效时间
-				<?php if($this->beginCache('cachename',['duration'=>$expiretime])){?>
+				<?php if($this->beginCache('cachename',['duration'=>$expiretime])){ ?>
 					<div class="content"></div>
-				<?php }$this->endCache(); ?>
+				<?php };$this->endCache(); ?>
 			依赖缓存
 				<?php if($this->beginCache('cachename',['dependency'=>$dependency])){?>
 					<div class="content"></div>
