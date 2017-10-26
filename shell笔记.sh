@@ -1,3 +1,4 @@
+#!/bin/bash
 shell中应用文件
 	source filename = . filename
 	如果是通过sh filename方式执行,脚本中的filename应该是绝对路径,否则找不到
