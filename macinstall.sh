@@ -9,7 +9,7 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 #安装wget
 brew install wget
 #安装依赖
-brew install  readline libmcrypt freetype libpng jpeg mcrypt mhash openssl re2c ImageMagick bison autoconf ffmpeg ImageMagick pcre zlib
+brew install readline libmcrypt freetype libpng jpeg mcrypt mhash openssl re2c ImageMagick bison autoconf ffmpeg ImageMagick pcre zlib
 #安装nginx
 mkdir ~/src/nginx
 wget http://nginx.org/download/nginx-1.8.0.tar.gz

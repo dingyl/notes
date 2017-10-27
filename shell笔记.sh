@@ -355,7 +355,7 @@ grub 命令
 			uid=`id -u www`
 			gid=`id -u www`
 			mount -t cifs -o username=ding,passwd=93177852,uid=$uid,gid=$gid,file_mode=0777,dir_mode=0777 //192.168.1.4/share /home/www/share/
-
+			mount -t cifs -o username=ding,passwd=93177852,uid=501,gid=501,file_mode=0777,dir_mode=0777 //192.168.0.180/share/ /tmp/share/
 			默认文件所有者为root
 			mount -t cifs -o username=ding,passwd='pwd'  //192.168.1.101/shares   /var/www/html/       挂载windows|linux下的共享文件
 
