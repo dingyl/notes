@@ -15,10 +15,10 @@
 	console.log(String.fromCharCode(72,69,76,76,79)); 将ASCII值数组转化成字符串
 	
 	字符串逆置
-	str.split('').reverse().join('')
+		str.split('').reverse().join('')
 	数组操作
-	arr.splice(index,length)//从index下标开始删除length个元素
-	arr.splice(index,length,a,b,c,....)后面是依次要添加的元素
+		arr.splice(index,length)//从index下标开始删除length个元素
+		arr.splice(index,length,a,b,c,....)后面是依次要添加的元素
 
 页面打印
 	window.print();

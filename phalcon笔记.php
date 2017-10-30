@@ -8,9 +8,9 @@ class IndexController extends Controller
 {
     public function indexAction()
     {
+        //在控制器中的echo 不会输出任何内容
 
         if ($this->request->isPost()) {};
-
 
         //sql操作
         $user = Users::findFirst(
@@ -69,6 +69,12 @@ class IndexController extends Controller
         // Take the active controller/action from the dispatcher
         $controller = $this->dispatcher->getControllerName();
         $action = $this->dispatcher->getActionName();
+
+        //有三个变量传递到视图中：title, menu 和 post ：
+        $this->view->setVar("title", $post->title);
+        $this->view->setVar("post", $post);
+        $this->view->setVar("menu", Menu::find());
+        $this->view->setVar("show_navigation", true);
     }
 }
 
@@ -83,6 +89,59 @@ class Users extends Model
 }
 
 view中
+变量可以使用过滤器格式化或修改，管道操作符 “|” 用于接收过滤器过滤变量：
+
+{{ post.title|e }}
+{{ post.content|striptags }}
+{{ name|capitalize|trim }}
+e   Applies Phalcon\Escaper->escapeHtml to the value
+escape  Applies Phalcon\Escaper->escapeHtml to the value
+trim    Applies the trim PHP function to the value. Removing extra spaces
+striptags   Applies the striptags PHP function to the value. Removing HTML tags
+slashes Applies the slashes PHP function to the value. Escaping values
+stripslashes    Applies the stripslashes PHP function to the value. Removing escaped quotes
+capitalize  Capitalizes a string by applying the ucwords PHP function to the value
+lowercase   Change the case of a string to lowercase
+uppercase   Change the case of a string to uppercase
+length  Counts the string length or how many items are in an array or object
+nl2br   Changes newlines \n by line breaks (<br />). Uses the PHP function nl2br
+sort    Sorts an array using the PHP function asort
+json_encode Converts a value into its JSON representation
+
+
+
+
+<h1>Robots</h1>
+<ul>
+{% for robot in robots %}
+  <li>{{ robot.name|e }}</li>
+{% endfor %}
+</ul>
+
+<h1>Robots</h1>
+{% for robot in robots %}
+  {% for part in robot.parts %}
+  Robot: {{ robot.name|e }} Part: {{ part.name|e }} <br/>
+  {% endfor %}
+{% endfor %}
+
+
+<h1>Cyborg Robots</h1>
+<ul>
+{% for robot in robots %}
+  {% if robot.type = "cyborg" %}
+  <li>{{ robot.name|e }}</li>
+  {% endif %}
+{% endfor %}
+</ul>
+
+变量赋值
+在模板文件中，可以使用 “set” 设置或改变变量的值：
+{% set fruits = ['Apple', 'Banana', 'Orange'] %}
+{% set name = robot.name %}
+
+
+
 标签生成器
 <?php echo $this->tag->form("signup/register"); ?>
 <p>
