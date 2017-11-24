@@ -6,7 +6,7 @@ Linux下的crontab定时执行任务命令详解
 	步骤一：编辑添加一个任务
 		crontab -e
 		*/1 * * * * echo "test" >> /tmp/test
-	步骤二:用crontab.txt中的人物覆盖当前的任务
+	步骤二:用crontab.txt中的任务覆盖当前的任务
 		crontab crontab.txt
 	步骤三:查看当前的任务
 		crontab -l
